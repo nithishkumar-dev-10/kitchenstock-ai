@@ -1,21 +1,17 @@
-# Kitchen Stock AI
+# KitchenStock AI
 
-Kitchen Stock AI is a smart kitchen inventory management system that helps users track ingredients, estimate consumption, and generate grocery lists.
+KitchenStock AI is an intelligent kitchen inventory and grocery prediction system that tracks ingredient usage and predicts when items will run out.
 
 ## Features
 
-- Ingredient inventory tracking
-- Dish logging and ingredient deduction
-- Low stock alerts
-- Smart shopping list generation
-- Future support for ML-based consumption prediction
+- Track available kitchen ingredients
+- Predict grocery needs using consumption patterns
+- Smart alerts for low stock items
+- Backend APIs built with FastAPI
 
 ## Tech Stack
 
-- Python
-- FastAPI
-- Machine Learning (future)
-
-## Project Goal
-
-Build an intelligent kitchen assistant that simplifies grocery planning and reduces food waste.
+Python  
+Machine Learning  
+FastAPI  
+HTML / CSS
