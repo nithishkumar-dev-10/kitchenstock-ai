@@ -3,6 +3,7 @@ from fastapi import APIRouter
 router = APIRouter(prefix="/ingredient")
 
 inventory = []
+
 @router.post("/")
 def add_item(name: str, quantity: int):
     item = {
