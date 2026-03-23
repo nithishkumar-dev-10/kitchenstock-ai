@@ -11,6 +11,7 @@ def add_item(name: str, quantity: int):
     }
     inventory.append(item)
     return {"msg": "Item added", "data": item}
+    
 @router.get("/")
 def get_items():
     return inventory
