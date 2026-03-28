@@ -4,7 +4,10 @@ from kitchen.services.dish_checker import check_ingredients
 
 def cook_dish(dish_name, servings):
     if not check_ingredients(dish_name, servings):
-        print("❌ Cannot cook")
+        print(" Ingredients were insufficient earlier!")
+        print(" Did you buy items? Consider updating inventory.")
+    if not check_ingredients(dish_name, servings):
+        print(" Cannot cook")
         return False
 
     with open("data/dishes.json") as f:
@@ -30,9 +33,9 @@ def cook_dish(dish_name, servings):
             if inventory[item]["quantity"] < 0:
                 inventory[item]["quantity"] = 0
         else:
-            print(f"⚠️ {item} not found in inventory")
+            print(f" {item} not found in inventory")
 
     with open("data/inventory.json", "w") as f:
         json.dump(inventory, f, indent=4)
 
-    print("✅ Cooking done & inventory updated")
+    print(" Cooking done & inventory updated")
