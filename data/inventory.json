@@ -1,0 +1,10 @@
+{
+    "rice": {
+        "quantity": 2,
+        "unit": "kg"
+    },
+    "oil": {
+        "quantity": 0.4,
+        "unit": "liter"
+    }
+}
