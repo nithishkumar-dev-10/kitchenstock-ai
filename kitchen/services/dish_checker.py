@@ -23,9 +23,9 @@ def check_ingredients(dish_name, servings):
         available = inventory.get(item, {}).get("quantity", 0)
 
         if available >= required:
-            print(f"✅ {item}: need {required}, have {available}")
+            print(f" {item}: need {required}, have {available}")
         else:
-            print(f"❌ {item}: need {required}, have {available}")
+            print(f" {item}: need {required}, have {available}")
             can_cook = False
 
     return can_cook

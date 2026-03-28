@@ -6,7 +6,6 @@ def cook_dish(dish_name, servings):
     if not check_ingredients(dish_name, servings):
         print(" Ingredients were insufficient earlier!")
         print(" Did you buy items? Consider updating inventory.")
-    if not check_ingredients(dish_name, servings):
         print(" Cannot cook")
         return False
 

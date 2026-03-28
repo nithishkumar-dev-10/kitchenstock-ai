@@ -4,7 +4,11 @@
         "unit": "kg"
     },
     "oil": {
-        "quantity": 0.4,
+        "quantity": 0.2,
         "unit": "liter"
+    },
+    "wheat": {
+        "quantity": 2,
+        "unit": "kg"
     }
 }
