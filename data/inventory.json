@@ -1,10 +1,10 @@
 {
     "rice": {
-        "quantity": 4,
+        "quantity": 6,
         "unit": "kg"
     },
     "oil": {
-        "quantity": 0.4,
+        "quantity": 0.09999999999999998,
         "unit": "liter"
     },
     "wheat": {

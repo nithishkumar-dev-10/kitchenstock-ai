@@ -51,8 +51,7 @@ def cook_dish(dish_name, servings):
         json.dump(inventory, f, indent=4)
 
     return {
-        "status": "success",
-        "dish": dish_name,
+        "dish_name": dish_name,
         "servings": servings,
         "updated_inventory": updated_items
     }
