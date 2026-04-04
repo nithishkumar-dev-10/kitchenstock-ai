@@ -31,10 +31,17 @@ def check_alerts():
         elif quantity < threshold:
             low_stock.append(item)
 
-    return {
-        "status": "ok",
-        "alerts": {
+    if not low_stock and not out_of_stock:
+
+        return {
             "low_stock": low_stock,
-            "out_of_stock": out_of_stock
+            "out_of_stock": out_of_stock,
+            "message": "All items are in good condition"
         }
-    }
+    else:
+        return {
+            "low_stock": low_stock,
+            "out_of_stock": out_of_stock,
+            "message": "Some items need attention: low stock or out of stock."
+        }
+        

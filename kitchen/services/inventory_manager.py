@@ -53,9 +53,8 @@ def update_stock(item, quantity):
         return {
             "item": item,
             "quantity": quantity,
+            "unit": inventory[item]["unit"],
             "status": "updated"
         }
     else:
-        return {
-            "error": f"{item} not found"
-        }
+        return None   
