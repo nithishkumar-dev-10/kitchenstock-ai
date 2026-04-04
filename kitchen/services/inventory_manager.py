@@ -19,32 +19,27 @@ def add_stock(item, quantity, unit):
 
     if item in inventory:
         inventory[item]["quantity"] += quantity
-        print(f"Updated {item}: +{quantity} {unit}")
+        status = "updated"
     else:
         inventory[item] = {
             "quantity": quantity,
             "unit": unit
         }
-        print(f"Added new item: {item} ({quantity} {unit})")
+        status = "added"
 
     save_inventory(inventory)
+
+    return {
+        "item": item,
+        "quantity": inventory[item]["quantity"],
+        "unit": inventory[item]["unit"],
+        "status": status
+    }
 
 
 # Get full inventory
 def get_inventory():
     return load_inventory()
-
-
-# Print inventory (for debugging)
-def print_inventory():
-    inventory = load_inventory()
-
-    print("\nCurrent Inventory:\n")
-
-    for item, data in inventory.items():
-        print(f"{item}: {data['quantity']} {data['unit']}")
-
-    print()
 
 
 # Update specific item quantity
@@ -53,8 +48,14 @@ def update_stock(item, quantity):
 
     if item in inventory:
         inventory[item]["quantity"] = quantity
-        print(f"Updated {item} to {quantity}")
-    else:
-        print(f"{item} not found")
+        save_inventory(inventory)
 
-    save_inventory(inventory)
+        return {
+            "item": item,
+            "quantity": quantity,
+            "status": "updated"
+        }
+    else:
+        return {
+            "error": f"{item} not found"
+        }
