@@ -9,9 +9,8 @@ def generate_shopping_list():
     out_of_stock = alerts["alerts"]["out_of_stock"]
 
     return {
-        "status": "ok",
-        "shopping_list": {
+        
             "low_stock": low_stock,
             "out_of_stock": out_of_stock
-        }
+        
     }
