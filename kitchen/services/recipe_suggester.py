@@ -1,6 +1,5 @@
 import json
 
-
 # Load dishes
 def load_dishes():
     with open("data/dishes.json") as f:
@@ -40,9 +39,8 @@ def suggest_recipes(max_missing=2):
             })
 
     return {
-        "status": "ok",
-        "recipes": {
+        
             "available": available,
             "partial": partial
-        }
+        
     }
