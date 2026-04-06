@@ -1,22 +1,11 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
 from kitchen.services.dish_engine import cook_dish
-from typing import List,Dict
 from fastapi import HTTPException
+from kitchen.schemas.dish_schema import DishInput,DishResponse
 
 router=APIRouter()
 
-class DishInput(BaseModel):
-    dish_name:str
-    servings:int
 
-class DishData(BaseModel):
-    dish_name:str
-    servings:int
-    updated_inventory:List[Dict]
-class DishResponse(BaseModel):
-    status:str
-    updated:DishData
 
 
 @router.put("/cook",response_model=DishResponse)
