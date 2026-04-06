@@ -1,18 +1,7 @@
 from fastapi import APIRouter
-from pydantic import BaseModel
-from typing import List,Dict
 from kitchen.services.recipe_suggester import suggest_recipes
 from fastapi import HTTPException
-
-class RecipeSuggestInput(BaseModel):
-    max_missing:int=2
-
-class RecipeData(BaseModel):
-    available:List[str]
-    partial:List[Dict]
-class RecipeResponse(BaseModel):
-    status:str
-    suggestion:RecipeData
+from kitchen.schemas.recipe_schema import RecipeResponse,RecipeSuggestInput
 
 router=APIRouter()
 
