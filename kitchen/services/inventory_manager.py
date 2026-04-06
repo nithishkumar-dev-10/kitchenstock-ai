@@ -3,8 +3,11 @@ import json
 
 # Load inventory
 def load_inventory():
-    with open("data/inventory.json") as f:
-        return json.load(f)
+    try:
+        with open("data/inventory.json") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
 
 
 # Save inventory

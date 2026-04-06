@@ -43,7 +43,7 @@ def view_inventory():
 @router.put("/stock/{item}",response_model=APIResponse)
 def update_inventory(item:str,data:UpdateStock):
     result=update_stock(item,data.quantity)
-    if not result:
+    if result is None:
         raise HTTPException(status_code=404, detail="Item not found")
         
     
@@ -55,7 +55,7 @@ def update_inventory(item:str,data:UpdateStock):
 def add_inventory(data:StockInput):
     result=add_stock(data.item,data.quantity,data.unit)
 
-    if not result:
+    if result is None:
         raise HTTPException(status_code=404,detail="Failed to add item")
     
     return{
