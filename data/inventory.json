@@ -12,11 +12,11 @@
         "unit": "kg"
     },
     "tomato": {
-        "quantity": 50.0,
+        "quantity": 15.0,
         "unit": "kg"
     },
     "potato": {
-        "quantity": 12,
+        "quantity": 22.0,
         "unit": "kg"
     }
 }
