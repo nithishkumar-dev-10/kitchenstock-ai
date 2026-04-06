@@ -1,17 +1,10 @@
 from fastapi import APIRouter,HTTPException
-from pydantic import BaseModel 
 from kitchen.services.shopping_list import generate_shopping_list
-from typing import List
+from kitchen.schemas.shopping_schema import ShoppingData,ShoppingResponse
 
 router=APIRouter()
 
-class ShoppingData(BaseModel):
-    low_stock:List[str]
-    out_of_stock:List[str]
 
-class ShoppingResponse(BaseModel):
-    status:str
-    shopping_list:ShoppingData
 
 @router.get("/shopping-list",response_model=ShoppingResponse)
 def shopping():
