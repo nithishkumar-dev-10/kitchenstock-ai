@@ -10,7 +10,7 @@ router=APIRouter()
 def shopping():
     result=generate_shopping_list()
 
-    if not result:
+    if result is None:
         raise HTTPException(status_code=404, detail="Unable to genarate shopping list")
     return{
         "status":"success",
