@@ -2,53 +2,63 @@ import json
 from kitchen.services.dish_checker import check_ingredients
 
 
+def load_dishes():
+    try:
+        with open("data/dishes.json") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+
+def load_inventory():
+    try:
+        with open("data/inventory.json") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+
+def save_inventory(inventory):
+    with open("data/inventory.json", "w") as f:
+        json.dump(inventory, f, indent=4)
+
+
 def cook_dish(dish_name, servings):
     check_result = check_ingredients(dish_name, servings)
 
-    # If dish not found or cannot cook
     if "error" in check_result:
         return check_result
 
-    if not check_result["can_cook"]:
-        return {
-            "status": "failed",
-            "message": "Insufficient ingredients",
-            "details": check_result
-        }
+    if not check_result.get("can_cook"):
+        return {"error": "Insufficient ingredients"}
 
-    with open("data/dishes.json") as f:
-        dishes = json.load(f)
+    dishes = load_dishes()
+    inventory = load_inventory()
 
-    with open("data/inventory.json") as f:
-        inventory = json.load(f)
+    if dish_name not in dishes:
+        return {"error": "Dish not found"}
 
     ingredients = dishes[dish_name]
-
     updated_items = []
 
     for item, qty in ingredients.items():
         required = qty * servings
 
-        if item in inventory:
-            inventory[item]["quantity"] -= required
+        if item not in inventory:
+            return {"error": f"{item} not found in inventory"}
 
-            # prevent negative
-            if inventory[item]["quantity"] < 0:
-                inventory[item]["quantity"] = 0
+        inventory[item]["quantity"] -= required
 
-            updated_items.append({
-                "item": item,
-                "used": required,
-                "remaining": inventory[item]["quantity"]
-            })
-        else:
-            updated_items.append({
-                "item": item,
-                "error": "not found in inventory"
-            })
+        if inventory[item]["quantity"] < 0:
+            inventory[item]["quantity"] = 0
 
-    with open("data/inventory.json", "w") as f:
-        json.dump(inventory, f, indent=4)
+        updated_items.append({
+            "item": item,
+            "quantity": inventory[item]["quantity"],
+            "unit": inventory[item].get("unit", "")
+        })
+
+    save_inventory(inventory)
 
     return {
         "dish_name": dish_name,
