@@ -6,7 +6,7 @@ router=APIRouter()
 
 
 
-@router.get("/alert",response_model=AlertResponse)
+@router.get("/alerts",response_model=AlertResponse)
 def alert_sys():
     result=check_alerts()
     return{

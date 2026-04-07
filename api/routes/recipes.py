@@ -5,10 +5,10 @@ from kitchen.schemas.recipe_schema import RecipeResponse,RecipeSuggestInput
 
 router=APIRouter()
 
-@router.post("/recipe_suggestion",response_model=RecipeResponse)
+@router.post("/recipes/suggest",response_model=RecipeResponse)
 def suggest(data:RecipeSuggestInput):
     result=suggest_recipes(data.max_missing)
-    if not result:
+    if result is None:
         raise HTTPException(status_code=404, detail="No items to suggest ")
     return{
         "status":"success",
