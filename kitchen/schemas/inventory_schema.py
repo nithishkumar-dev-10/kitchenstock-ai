@@ -1,29 +1,28 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Dict
-from typing import Union
 
 class InventoryItem(BaseModel):
-    quantity: float
-    unit: str
+    quantity: float = Field(..., gt=0, example=2.5)
+    unit: str = Field(..., min_length=1, example="kg")
 
 class InventoryResponse(BaseModel):
-    status:str
-    data:Dict[str, InventoryItem]
+    status: str
+    data: Dict[str, InventoryItem]
 
 class StockInput(BaseModel):
-    item:str
-    quantity:float
-    unit:str
+    item: str = Field(..., min_length=1, example="rice")
+    quantity: float = Field(..., gt=0, example=2.5)
+    unit: str = Field(..., min_length=1, example="kg")
 
 class StockResponse(BaseModel):
-    item:str
-    quantity:float
-    unit:str
-    status:str
+    item: str
+    quantity: float
+    unit: str
+    status: str
 
 class APIResponse(BaseModel):
-    status:str
-    data:StockResponse
-    
+    status: str
+    data: StockResponse
+
 class UpdateStock(BaseModel):
-    quantity:float
+    quantity: float = Field(..., gt=0, example=1.0)

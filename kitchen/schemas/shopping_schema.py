@@ -1,10 +1,10 @@
+from pydantic import BaseModel, Field
 from typing import List
-from pydantic import BaseModel 
 
 class ShoppingData(BaseModel):
-    low_stock:List[str]
-    out_of_stock:List[str]
+    low_stock: List[str] = Field(default_factory=list, example=["rice"])
+    out_of_stock: List[str] = Field(default_factory=list, example=["salt"])
 
 class ShoppingResponse(BaseModel):
-    status:str
-    shopping_list:ShoppingData
+    status: str = Field(..., example="success")
+    shopping_list: ShoppingData
