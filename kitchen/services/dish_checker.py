@@ -1,16 +1,31 @@
 import json
 
-def check_ingredients(dish_name, servings):
-    with open("data/dishes.json") as f:
-        dishes = json.load(f)
 
-    with open("data/inventory.json") as f:
-        inventory = json.load(f)
+def load_dishes():
+    try:
+        with open("data/dishes.json") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+
+def load_inventory():
+    try:
+        with open("data/inventory.json") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
+
+
+def check_ingredients(dish_name, servings):
+    dishes = load_dishes()
+    inventory = load_inventory()
 
     if dish_name not in dishes:
-        return {
-            "error": "Dish not found"
-        }
+        return {"error": "Dish not found"}
+
+    if servings <= 0:
+        return {"error": "Servings must be greater than 0"}
 
     ingredients = dishes[dish_name]
 
@@ -21,17 +36,17 @@ def check_ingredients(dish_name, servings):
         required = qty * servings
         available = inventory.get(item, {}).get("quantity", 0)
 
-        item_status = {
+        enough = available >= required
+
+        if not enough:
+            can_cook = False
+
+        result.append({
             "item": item,
             "required": required,
             "available": available,
-            "enough": available >= required
-        }
-
-        if available < required:
-            can_cook = False
-
-        result.append(item_status)
+            "enough": enough
+        })
 
     return {
         "dish": dish_name,

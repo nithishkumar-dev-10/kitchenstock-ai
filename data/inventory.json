@@ -1,6 +1,6 @@
 {
     "rice": {
-        "quantity": 6,
+        "quantity": 8.5,
         "unit": "kg"
     },
     "oil": {
@@ -12,7 +12,7 @@
         "unit": "kg"
     },
     "tomato": {
-        "quantity": 15.0,
+        "quantity": 20.0,
         "unit": "kg"
     },
     "potato": {

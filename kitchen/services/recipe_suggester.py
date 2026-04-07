@@ -1,21 +1,31 @@
 import json
 
-# Load dishes
+
 def load_dishes():
-    with open("data/dishes.json") as f:
-        return json.load(f)
+    try:
+        with open("data/dishes.json") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
 
 
-# Load inventory
 def load_inventory():
-    with open("data/inventory.json") as f:
-        return json.load(f)
+    try:
+        with open("data/inventory.json") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
 
 
-# Main function
 def suggest_recipes(max_missing=2):
     dishes = load_dishes()
     inventory = load_inventory()
+
+    if not dishes:
+        return {"error": "No recipes available"}
+
+    if max_missing < 0:
+        return {"error": "max_missing must be >= 0"}
 
     available = []
     partial = []
@@ -29,7 +39,6 @@ def suggest_recipes(max_missing=2):
             if available_qty <= 0:
                 missing_items.append(item)
 
-        # classify dishes
         if len(missing_items) == 0:
             available.append(dish_name)
         elif len(missing_items) <= max_missing:
@@ -39,8 +48,6 @@ def suggest_recipes(max_missing=2):
             })
 
     return {
-        
-            "available": available,
-            "partial": partial
-        
+        "available": available,
+        "partial": partial
     }
