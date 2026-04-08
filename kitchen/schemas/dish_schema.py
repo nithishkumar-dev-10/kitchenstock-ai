@@ -1,13 +1,10 @@
 from pydantic import BaseModel, Field
-from typing import List
+from typing import List,Any
 
-class DishInput(BaseModel):
+class DishRequest(BaseModel):
     dish_name: str = Field(..., min_length=1, example="fried_rice")
     servings: int = Field(..., ge=1, example=2)
 
-class DishCheckInput(BaseModel):
-    dish_name: str = Field(..., min_length=1, example="fried_rice")
-    servings: int = Field(..., ge=1, example=2)
 
 class InventorySnapshot(BaseModel):
     item: str
@@ -19,6 +16,6 @@ class DishData(BaseModel):
     servings: int
     updated_inventory: List[InventorySnapshot]
 
-class DishResponse(BaseModel):
+class APIResponse(BaseModel):
     status: str
-    updated: DishData
+    data: Any
