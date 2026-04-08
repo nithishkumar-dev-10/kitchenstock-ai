@@ -1,35 +1,37 @@
 import json
+from kitchen.utils.exceptions import ItemNotFoundError, InvalidInputError, DataLoadError
 
 
-def load_inventory():
+def load_inventory() -> dict:
     try:
         with open("data/inventory.json") as f:
             return json.load(f)
     except FileNotFoundError:
-        return {}
+        raise DataLoadError("Inventory data file not found")
+    except json.JSONDecodeError:
+        raise DataLoadError("Inventory data file is corrupted")
 
 
-
-def save_inventory(inventory):
+def save_inventory(inventory: dict) -> None:
     with open("data/inventory.json", "w") as f:
         json.dump(inventory, f, indent=4)
 
 
-def add_stock(item, quantity, unit):
-    inventory = load_inventory()
+def get_inventory() -> dict:
+    return load_inventory()
 
-  
+
+def add_stock(item: str, quantity: float, unit: str) -> dict:
     if quantity <= 0:
-        return {"error": "Quantity must be greater than 0"}
+        raise InvalidInputError("Quantity must be greater than 0")
+
+    inventory = load_inventory()
 
     if item in inventory:
         inventory[item]["quantity"] += quantity
         status = "updated"
     else:
-        inventory[item] = {
-            "quantity": quantity,
-            "unit": unit
-        }
+        inventory[item] = {"quantity": quantity, "unit": unit}
         status = "added"
 
     save_inventory(inventory)
@@ -42,22 +44,14 @@ def add_stock(item, quantity, unit):
     }
 
 
+def update_stock(item: str, quantity: float) -> dict:
+    if quantity <= 0:
+        raise InvalidInputError("Quantity must be greater than 0")
 
-def get_inventory():
-    return load_inventory()
-
-
-
-def update_stock(item, quantity):
     inventory = load_inventory()
 
-
     if item not in inventory:
-        return {"error": "Item not found"}
-
-  
-    if quantity <= 0:
-        return {"error": "Quantity must be greater than 0"}
+        raise ItemNotFoundError(f"Item '{item}' not found in inventory")
 
     inventory[item]["quantity"] = quantity
     save_inventory(inventory)
@@ -68,3 +62,15 @@ def update_stock(item, quantity):
         "unit": inventory[item]["unit"],
         "status": "updated"
     }
+
+
+def delete_stock(item: str) -> dict:
+    inventory = load_inventory()
+
+    if item not in inventory:
+        raise ItemNotFoundError(f"Item '{item}' not found in inventory")
+
+    del inventory[item]
+    save_inventory(inventory)
+
+    return {"item": item, "status": "deleted"}
