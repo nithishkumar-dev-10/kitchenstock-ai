@@ -5,6 +5,6 @@ class ShoppingData(BaseModel):
     low_stock: List[str] = Field(default_factory=list, example=["rice"])
     out_of_stock: List[str] = Field(default_factory=list, example=["salt"])
 
-class ShoppingResponse(BaseModel):
+class APIResponse(BaseModel):
     status: str = Field(..., example="success")
     shopping_list: ShoppingData

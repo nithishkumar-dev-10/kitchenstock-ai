@@ -8,6 +8,6 @@ class RecipeData(BaseModel):
     available: List[str] = Field(default_factory=list, example=["rice", "egg"])
     partial: List[Dict] = Field(default_factory=list)
 
-class RecipeResponse(BaseModel):
+class APIResponse(BaseModel):
     status: str = Field(..., example="success")
     suggestion: RecipeData
