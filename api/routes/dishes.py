@@ -1,28 +1,46 @@
 from fastapi import APIRouter, HTTPException
-from kitchen.services.dish_engine import cook_dish
 from kitchen.services.dish_checker import check_ingredients
-from kitchen.schemas.dish_schema import DishInput, DishResponse, DishCheckInput
+from kitchen.services.dish_engine import cook_dish
+from kitchen.schemas.dish_schema import DishRequest, APIResponse
+from kitchen.utils.exceptions import InvalidInputError,ItemNotFoundError,InsufficientStockError,DataLoadError
+
+from kitchen.utils.responses import success_response
 
 router = APIRouter()
 
-@router.post("/dishes/check")
-def check_dish(data: DishCheckInput):
-    result = check_ingredients(data.dish_name, data.servings)
-    
-    if "error" in result:
-        raise HTTPException(status_code=404, detail=result["error"])
-    
-    return {"status": "success", "data": result}
 
 
-@router.post("/dishes/cook", response_model=DishResponse)
-def cook(data: DishInput):
-    result = cook_dish(data.dish_name, data.servings)
-    
-    if "error" in result or result.get("status") == "failed":
-        raise HTTPException(
-            status_code=400,
-            detail=result.get("error") or result.get("message")
-        )
-    
-    return {"status": "success", "updated": result}
+@router.post("/dishes/check", response_model=APIResponse)
+def check_dish(data: DishRequest):
+    try:
+        result = check_ingredients(data.dish_name, data.servings)
+        return success_response(data=result)
+
+    except InvalidInputError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    except ItemNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    except DataLoadError as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+
+@router.post("/dishes/cook", response_model=APIResponse)
+def cook(data: DishRequest):
+    try:
+        result = cook_dish(data.dish_name, data.servings)
+        return success_response(data=result)
+
+    except InvalidInputError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    except ItemNotFoundError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+    except InsufficientStockError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+
+    except DataLoadError as e:
+        raise HTTPException(status_code=500, detail=str(e))
