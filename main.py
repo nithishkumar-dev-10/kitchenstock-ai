@@ -1,11 +1,11 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-
+from kitchen.core.config import settings
 from api.routes import alerts, dishes, inventory, recipes, shopping
 from kitchen.utils.exceptions import KitchenBaseError
 from kitchen.utils.responses import error_response
 
-app = FastAPI(title="KitchenStock AI")
+app = FastAPI(title=settings.app_name,version=settings.version,debug=settings.debug)
 
 
 @app.exception_handler(KitchenBaseError)
