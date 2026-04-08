@@ -1,31 +1,17 @@
-import json
+from kitchen.services.dish_checker import load_dishes, load_inventory
+from kitchen.utils.exceptions import InvalidInputError, NoDataAvailableError
 
 
-def load_dishes():
-    try:
-        with open("data/dishes.json") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
+def suggest_recipes(max_missing: int = 2) -> dict:
+    if max_missing < 0:
+        raise InvalidInputError("max_missing must be 0 or greater")
 
-
-def load_inventory():
-    try:
-        with open("data/inventory.json") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        return {}
-
-
-def suggest_recipes(max_missing=2):
     dishes = load_dishes()
-    inventory = load_inventory()
 
     if not dishes:
-        return {"error": "No recipes available"}
+        raise NoDataAvailableError("No recipes available in the system")
 
-    if max_missing < 0:
-        return {"error": "max_missing must be >= 0"}
+    inventory = load_inventory()
 
     available = []
     partial = []
