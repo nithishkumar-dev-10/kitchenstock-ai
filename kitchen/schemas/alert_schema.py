@@ -7,6 +7,8 @@ class AlertData(BaseModel):
     message: str = Field(..., min_length=1, example="Items need restocking")
 
 
-class APIResponse(BaseModel):
-    status: str
+class AlertResponse(BaseModel):
+    success: bool
     data: Any
+    message: str = "Success"
+    

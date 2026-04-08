@@ -1,25 +1,5 @@
-import json
-from kitchen.utils.exceptions import ItemNotFoundError, InvalidInputError, DataLoadError
-
-
-def load_dishes() -> dict:
-    try:
-        with open("data/dishes.json") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        raise DataLoadError("Dishes data file not found")
-    except json.JSONDecodeError:
-        raise DataLoadError("Dishes data file is corrupted")
-
-
-def load_inventory() -> dict:
-    try:
-        with open("data/inventory.json") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        raise DataLoadError("Inventory data file not found")
-    except json.JSONDecodeError:
-        raise DataLoadError("Inventory data file is corrupted")
+from kitchen.services.data_loader import load_dishes, load_inventory
+from kitchen.utils.exceptions import ItemNotFoundError, InvalidInputError
 
 
 def check_ingredients(dish_name: str, servings: int) -> dict:
@@ -39,7 +19,7 @@ def check_ingredients(dish_name: str, servings: int) -> dict:
 
     for item, qty in ingredients.items():
         required = qty * servings
-        available = inventory.get(item, {}).get("quantity", 0)
+        available = inventory.get(item, {}).get("quantity", 0)  # Safe: default 0
         enough = available >= required
 
         if not enough:

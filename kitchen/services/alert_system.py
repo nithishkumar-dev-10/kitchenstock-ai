@@ -1,25 +1,5 @@
-import json
-from kitchen.utils.exceptions import DataLoadError, NoDataAvailableError
-
-
-def load_inventory() -> dict:
-    try:
-        with open("data/inventory.json") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        raise DataLoadError("Inventory data file not found")
-    except json.JSONDecodeError:
-        raise DataLoadError("Inventory data file is corrupted")
-
-
-def load_thresholds() -> dict:
-    try:
-        with open("data/thresholds.json") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        raise DataLoadError("Thresholds data file not found")
-    except json.JSONDecodeError:
-        raise DataLoadError("Thresholds data file is corrupted")
+from kitchen.services.data_loader import load_inventory, load_thresholds
+from kitchen.utils.exceptions import NoDataAvailableError
 
 
 def check_alerts() -> dict:
@@ -34,8 +14,8 @@ def check_alerts() -> dict:
     out_of_stock = []
 
     for item, data in inventory.items():
-        quantity = data.get("quantity", 0)
-        threshold = thresholds.get(item, 1)
+        quantity = data.get("quantity", 0)  
+        threshold = thresholds.get(item, 1) 
 
         if quantity == 0:
             out_of_stock.append(item)

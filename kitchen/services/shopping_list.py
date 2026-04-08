@@ -4,7 +4,6 @@ from kitchen.utils.exceptions import NoDataAvailableError
 
 def generate_shopping_list() -> dict:
     # check_alerts() will raise DataLoadError or NoDataAvailableError
-    # if something is wrong — we let those bubble up to the route
     alerts = check_alerts()
 
     low_stock = alerts.get("low_stock", [])

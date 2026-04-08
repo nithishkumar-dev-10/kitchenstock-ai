@@ -1,15 +1,10 @@
-import json
-from kitchen.services.dish_checker import check_ingredients, load_dishes, load_inventory
-from kitchen.utils.exceptions import ItemNotFoundError, InsufficientStockError, DataLoadError
-
-
-def save_inventory(inventory: dict) -> None:
-    with open("data/inventory.json", "w") as f:
-        json.dump(inventory, f, indent=4)
+from kitchen.services.data_loader import load_dishes, load_inventory, save_inventory
+from kitchen.services.dish_checker import check_ingredients
+from kitchen.utils.exceptions import ItemNotFoundError, InsufficientStockError
 
 
 def cook_dish(dish_name: str, servings: int) -> dict:
-    # This will raise ItemNotFoundError or InvalidInputError if something is wrong
+    # Raises ItemNotFoundError or InvalidInputError if something is wrong
     check_result = check_ingredients(dish_name, servings)
 
     if not check_result.get("can_cook"):
@@ -34,13 +29,14 @@ def cook_dish(dish_name: str, servings: int) -> dict:
 
         inventory[item]["quantity"] -= required
 
+        # Clamp to 0 — prevent negative stock
         if inventory[item]["quantity"] < 0:
             inventory[item]["quantity"] = 0
 
         updated_items.append({
             "item": item,
             "quantity": inventory[item]["quantity"],
-            "unit": inventory[item].get("unit", "")
+            "unit": inventory[item].get("unit", "")  # Safe: default empty string
         })
 
     save_inventory(inventory)

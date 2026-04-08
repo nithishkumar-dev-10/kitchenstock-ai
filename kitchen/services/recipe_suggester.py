@@ -1,4 +1,4 @@
-from kitchen.services.dish_checker import load_dishes, load_inventory
+from kitchen.services.data_loader import load_dishes, load_inventory
 from kitchen.utils.exceptions import InvalidInputError, NoDataAvailableError
 
 
@@ -20,7 +20,7 @@ def suggest_recipes(max_missing: int = 2) -> dict:
         missing_items = []
 
         for item in ingredients:
-            available_qty = inventory.get(item, {}).get("quantity", 0)
+            available_qty = inventory.get(item, {}).get("quantity", 0)  # Safe default
 
             if available_qty <= 0:
                 missing_items.append(item)
