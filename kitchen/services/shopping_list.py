@@ -15,4 +15,5 @@ def generate_shopping_list() -> dict:
     return {
         "low_stock": low_stock,
         "out_of_stock": out_of_stock
+    
     }
