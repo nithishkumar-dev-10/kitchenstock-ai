@@ -1,72 +1,262 @@
 [
-  {"dish": "idli", "date": "2026-03-01"},
-  {"dish": "dosa", "date": "2026-03-02"},
-  {"dish": "pongal", "date": "2026-03-03"},
-  {"dish": "curd_rice", "date": "2026-03-03"},
-  {"dish": "sambar", "date": "2026-03-03"},
-
-  {"dish": "vegetable_upma", "date": "2026-03-04"},
-  {"dish": "lemon_rice", "date": "2026-03-05"},
-  {"dish": "rasam", "date": "2026-03-05"},
-  {"dish": "poriyal", "date": "2026-03-05"},
-
-  {"dish": "masala_dosa", "date": "2026-03-06"},
-  {"dish": "egg_dosa", "date": "2026-03-07"},
-
-  {"dish": "chicken_biryani", "date": "2026-03-08"},
-  {"dish": "curd_rice", "date": "2026-03-08"},
-
-  {"dish": "chapati", "date": "2026-03-09"},
-  {"dish": "paneer_butter_masala", "date": "2026-03-09"},
-
-  {"dish": "veg_biryani", "date": "2026-03-10"},
-  {"dish": "raita", "date": "2026-03-10"},
-
-  {"dish": "fried_rice", "date": "2026-03-11"},
-  {"dish": "egg_fried_rice", "date": "2026-03-12"},
-
-  {"dish": "noodles", "date": "2026-03-13"},
-  {"dish": "veg_noodles", "date": "2026-03-14"},
-
-  {"dish": "roti", "date": "2026-03-15"},
-  {"dish": "dal_tadka", "date": "2026-03-15"},
-
-  {"dish": "aloo_paratha", "date": "2026-03-16"},
-  {"dish": "curd_rice", "date": "2026-03-16"},
-
-  {"dish": "poori", "date": "2026-03-17"},
-  {"dish": "aloo_bhaji", "date": "2026-03-17"},
-
-  {"dish": "idli", "date": "2026-03-18"},
-  {"dish": "sambar", "date": "2026-03-18"},
-
-  {"dish": "dosa", "date": "2026-03-19"},
-  {"dish": "coconut_rice", "date": "2026-03-20"},
-
-  {"dish": "tamarind_rice", "date": "2026-03-21"},
-  {"dish": "fish_fry", "date": "2026-03-21"},
-
-  {"dish": "mutton_chukka", "date": "2026-03-22"},
-  {"dish": "chapati", "date": "2026-03-22"},
-
-  {"dish": "veg_pulao", "date": "2026-03-23"},
-  {"dish": "egg_curry", "date": "2026-03-23"},
-
-  {"dish": "sandwich", "date": "2026-03-24"},
-  {"dish": "veg_sandwich", "date": "2026-03-25"},
-
-  {"dish": "salad", "date": "2026-03-26"},
-  {"dish": "fruit_salad", "date": "2026-03-27"},
-
-  {"dish": "banana_shake", "date": "2026-03-28"},
-  {"dish": "milkshake", "date": "2026-03-28"},
-
-  {"dish": "coffee", "date": "2026-03-29"},
-  {"dish": "tea", "date": "2026-03-29"},
-
-  {"dish": "jam_bread", "date": "2026-03-30"},
-  {"dish": "omelette_bread", "date": "2026-03-30"},
-
-  {"dish": "pasta", "date": "2026-03-31"},
-  {"dish": "veg_cutlet", "date": "2026-03-31"}
+  {
+    "dish": "idli",
+    "servings": 2,
+    "date": "2026-03-01"
+  },
+  {
+    "dish": "dosa",
+    "servings": 2,
+    "date": "2026-03-02"
+  },
+  {
+    "dish": "pongal",
+    "servings": 2,
+    "date": "2026-03-03"
+  },
+  {
+    "dish": "curd_rice",
+    "servings": 2,
+    "date": "2026-03-03"
+  },
+  {
+    "dish": "sambar",
+    "servings": 2,
+    "date": "2026-03-03"
+  },
+  {
+    "dish": "vegetable_upma",
+    "servings": 2,
+    "date": "2026-03-04"
+  },
+  {
+    "dish": "lemon_rice",
+    "servings": 2,
+    "date": "2026-03-05"
+  },
+  {
+    "dish": "rasam",
+    "servings": 2,
+    "date": "2026-03-05"
+  },
+  {
+    "dish": "poriyal",
+    "servings": 2,
+    "date": "2026-03-05"
+  },
+  {
+    "dish": "masala_dosa",
+    "servings": 2,
+    "date": "2026-03-06"
+  },
+  {
+    "dish": "egg_dosa",
+    "servings": 2,
+    "date": "2026-03-07"
+  },
+  {
+    "dish": "chicken_biryani",
+    "servings": 2,
+    "date": "2026-03-08"
+  },
+  {
+    "dish": "curd_rice",
+    "servings": 2,
+    "date": "2026-03-08"
+  },
+  {
+    "dish": "chapati",
+    "servings": 2,
+    "date": "2026-03-09"
+  },
+  {
+    "dish": "paneer_butter_masala",
+    "servings": 2,
+    "date": "2026-03-09"
+  },
+  {
+    "dish": "veg_biryani",
+    "servings": 2,
+    "date": "2026-03-10"
+  },
+  {
+    "dish": "raita",
+    "servings": 2,
+    "date": "2026-03-10"
+  },
+  {
+    "dish": "fried_rice",
+    "servings": 2,
+    "date": "2026-03-11"
+  },
+  {
+    "dish": "egg_fried_rice",
+    "servings": 2,
+    "date": "2026-03-12"
+  },
+  {
+    "dish": "noodles",
+    "servings": 2,
+    "date": "2026-03-13"
+  },
+  {
+    "dish": "veg_noodles",
+    "servings": 2,
+    "date": "2026-03-14"
+  },
+  {
+    "dish": "roti",
+    "servings": 2,
+    "date": "2026-03-15"
+  },
+  {
+    "dish": "dal_tadka",
+    "servings": 2,
+    "date": "2026-03-15"
+  },
+  {
+    "dish": "aloo_paratha",
+    "servings": 2,
+    "date": "2026-03-16"
+  },
+  {
+    "dish": "curd_rice",
+    "servings": 2,
+    "date": "2026-03-16"
+  },
+  {
+    "dish": "poori",
+    "servings": 2,
+    "date": "2026-03-17"
+  },
+  {
+    "dish": "aloo_bhaji",
+    "servings": 2,
+    "date": "2026-03-17"
+  },
+  {
+    "dish": "idli",
+    "servings": 2,
+    "date": "2026-03-18"
+  },
+  {
+    "dish": "sambar",
+    "servings": 2,
+    "date": "2026-03-18"
+  },
+  {
+    "dish": "dosa",
+    "servings": 2,
+    "date": "2026-03-19"
+  },
+  {
+    "dish": "coconut_rice",
+    "servings": 2,
+    "date": "2026-03-20"
+  },
+  {
+    "dish": "tamarind_rice",
+    "servings": 2,
+    "date": "2026-03-21"
+  },
+  {
+    "dish": "fish_fry",
+    "servings": 2,
+    "date": "2026-03-21"
+  },
+  {
+    "dish": "mutton_chukka",
+    "servings": 2,
+    "date": "2026-03-22"
+  },
+  {
+    "dish": "chapati",
+    "servings": 2,
+    "date": "2026-03-22"
+  },
+  {
+    "dish": "veg_pulao",
+    "servings": 2,
+    "date": "2026-03-23"
+  },
+  {
+    "dish": "egg_curry",
+    "servings": 2,
+    "date": "2026-03-23"
+  },
+  {
+    "dish": "sandwich",
+    "servings": 2,
+    "date": "2026-03-24"
+  },
+  {
+    "dish": "veg_sandwich",
+    "servings": 2,
+    "date": "2026-03-25"
+  },
+  {
+    "dish": "salad",
+    "servings": 2,
+    "date": "2026-03-26"
+  },
+  {
+    "dish": "fruit_salad",
+    "servings": 2,
+    "date": "2026-03-27"
+  },
+  {
+    "dish": "banana_shake",
+    "servings": 2,
+    "date": "2026-03-28"
+  },
+  {
+    "dish": "milkshake",
+    "servings": 2,
+    "date": "2026-03-28"
+  },
+  {
+    "dish": "coffee",
+    "servings": 2,
+    "date": "2026-03-29"
+  },
+  {
+    "dish": "tea",
+    "servings": 2,
+    "date": "2026-03-29"
+  },
+  {
+    "dish": "jam_bread",
+    "servings": 2,
+    "date": "2026-03-30"
+  },
+  {
+    "dish": "omelette_bread",
+    "servings": 2,
+    "date": "2026-03-30"
+  },
+  {
+    "dish": "pasta",
+    "servings": 2,
+    "date": "2026-03-31"
+  },
+  {
+    "dish": "veg_cutlet",
+    "servings": 2,
+    "date": "2026-03-31"
+  },
+  {
+    "dish": "idli",
+    "servings": 2,
+    "date": "2026-04-10"
+  },
+  {
+    "dish": "sambar",
+    "servings": 2,
+    "date": "2026-04-10"
+  },
+  {
+    "dish": "idli",
+    "servings": 2,
+    "date": "2026-04-10"
+  }
 ]
