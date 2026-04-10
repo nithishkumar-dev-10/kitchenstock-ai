@@ -1,0 +1,15 @@
+{
+  "user_1": {
+    "name": "Nithu",
+    "family_size": 3,
+    "diet": "mixed",
+    "region": "tamil_nadu",
+
+    "preferences": {
+      "likes": ["idli", "dosa", "chicken_biryani", "chapati"],
+      "dislikes": ["mushroom"]
+    },
+
+    "consumption_mode": "auto"
+  }
+}
