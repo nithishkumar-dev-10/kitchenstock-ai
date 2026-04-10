@@ -1,6 +1,24 @@
-.venv/
+
+# Virtual environment
+venv/
+
+# Python cache
 __pycache__/
 *.pyc
-.env
+*.pyo
+
+# Full datasets
 data/raw/
 data/processed/
+
+# Local config (DO NOT PUSH)
+config/config.yaml
+
+# Environment variables
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+logs/
