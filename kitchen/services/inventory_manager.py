@@ -6,7 +6,7 @@ def get_inventory() -> dict:
     return load_inventory()
 
 
-def add_stock(item: str, quantity: float, unit: str) -> dict:
+def add_stock(item: str, quantity: float, unit: str, expiry_date: str = None) -> dict:
     if quantity <= 0:
         raise InvalidInputError("Quantity must be greater than 0")
 
@@ -14,9 +14,15 @@ def add_stock(item: str, quantity: float, unit: str) -> dict:
 
     if item in inventory:
         inventory[item]["quantity"] += quantity
+        if expiry_date:
+            inventory[item]["expiry_date"] = expiry_date
         status = "updated"
     else:
-        inventory[item] = {"quantity": quantity, "unit": unit}
+        inventory[item] = {
+            "quantity": quantity,
+            "unit": unit,
+            "expiry_date": expiry_date
+        }
         status = "added"
 
     save_inventory(inventory)
@@ -25,6 +31,7 @@ def add_stock(item: str, quantity: float, unit: str) -> dict:
         "item": item,
         "quantity": inventory[item]["quantity"],
         "unit": inventory[item]["unit"],
+        "expiry_date": inventory[item].get("expiry_date"),
         "status": status
     }
 
