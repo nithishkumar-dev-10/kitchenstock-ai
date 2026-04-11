@@ -1,6 +1,6 @@
 from collections import defaultdict
 from datetime import datetime, timedelta
-from kitchen.services.data_loader import load_dishes
+from kitchen.services.data_loader import load_dishes, load_inventory, save_inventory
 import json
 
 
@@ -95,11 +95,29 @@ class ConsumptionAnalyzer:
         with open("data/consumption_log.json", "w") as f:
             json.dump(self.consumption_log, f, indent=2)
 
+        # Deduct ingredients from inventory
+        inventory = load_inventory()
+        ingredients = self.dishes[dish_name]
+        deducted = []
+        skipped = []
+
+        for item, qty_per_serving in ingredients.items():
+            required = qty_per_serving * servings
+            if item in inventory:
+                inventory[item]["quantity"] = max(0, inventory[item]["quantity"] - required)
+                deducted.append({"item": item, "deducted": required})
+            else:
+                skipped.append(item)
+
+        save_inventory(inventory)
+
         return {
             "logged": True,
             "dish": dish_name,
             "servings": servings,
-            "date": date
+            "date": date,
+            "inventory_deducted": deducted,
+            "ingredients_not_in_inventory": skipped
         }
 
     def estimate_missing_days(self, from_date: str, to_date: str) -> dict:
