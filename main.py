@@ -17,9 +17,16 @@ from api.routes import (
     storage,
 )
 
-# Services (import at top — better practice)
+# Services
 from kitchen.services.prediction_engine import predict_runout
 from kitchen.services.alert_system import check_alerts
+
+# OPTIONAL (future ML integration)
+try:
+    from kitchen.services.ml_engine import predict_with_model
+    ML_AVAILABLE = True
+except ImportError:
+    ML_AVAILABLE = False
 
 
 # ------------------ APP INIT ------------------
@@ -48,15 +55,29 @@ async def generic_exception_handler(request: Request, exc: Exception):
     )
 
 
-# ------------------ CORE ENDPOINT ------------------
+# ------------------ CORE DASHBOARD ------------------
 
 @app.get("/dashboard", tags=["Dashboard"])
 def dashboard():
+    """
+    Dashboard combines:
+    - predictions (ML or fallback)
+    - alerts
+    """
+
+    #  Prediction logic (ML + fallback)
     try:
-        predictions = predict_runout()
+        if ML_AVAILABLE:
+            predictions = predict_with_model()
+        else:
+            predictions = predict_runout()
     except NoDataAvailableError:
         predictions = {"predictions": []}
+    except Exception:
+        # fallback safety
+        predictions = predict_runout()
 
+    # 🔥 Alerts
     try:
         alerts_data = check_alerts()
     except Exception:
@@ -87,5 +108,6 @@ def health():
     return {
         "status": "ok",
         "app": settings.app_name,
-        "version": settings.version
+        "version": settings.version,
+        "ml_enabled": ML_AVAILABLE   #  NEW
     }
