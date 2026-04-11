@@ -2,11 +2,18 @@
   "rice": 20000,
   "basmati_rice": 8000,
   "brown_rice": 4000,
+  "flour": 4000,
+  "rava": 1500,
+  "lentil": 2000,
+  "oil": 800,
+  "onion": 1500,
+  "potato": 2000,
+  "chicken": 1000,
+  "egg": 8,
+  "yogurt": 200,
 
   "wheat": 6000,
-  "flour": 4000,
   "maida": 2000,
-  "rava": 1500,
 
   "toor_dal": 2500,
   "moong_dal": 2000,
@@ -14,9 +21,7 @@
   "rajma": 1500,
   "chickpeas": 1800,
 
-  "onion": 1500,
   "tomato": 1200,
-  "potato": 2000,
   "carrot": 800,
   "beans": 700,
   "capsicum": 500,
@@ -31,11 +36,9 @@
   "sweet_corn": 400,
   "mushroom": 300,
 
-  "chicken": 1000,
   "fish": 800,
   "mutton": 600,
 
-  "egg": 8,
   "milk": 800,
   "curd": 600,
   "butter": 200,
@@ -44,7 +47,6 @@
   "tofu": 250,
   "soya_chunks": 400,
 
-  "oil": 800,
   "ghee": 200,
 
   "salt": 400,

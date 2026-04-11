@@ -16,7 +16,7 @@ FULL_INVENTORY = {
 
 def test_cook_dish_deducts_inventory():
     from kitchen.services.dish_engine import cook_dish
-    inventory = {k: dict(v) for k, v in FULL_INVENTORY.items()}  # deep copy
+    inventory = {k: dict(v) for k, v in FULL_INVENTORY.items()}
     with patch("kitchen.services.dish_engine.load_dishes", return_value=DISHES), \
          patch("kitchen.services.dish_engine.load_inventory", return_value=inventory), \
          patch("kitchen.services.dish_engine.save_inventory") as mock_save, \
@@ -51,15 +51,20 @@ def test_cook_dish_not_found():
 
 def test_cook_dish_clamps_to_zero():
     from kitchen.services.dish_engine import cook_dish
+    # flour=100, recipe needs 150 per serving — after check passes (100 >= 100 for 1 serving... wait)
+    # Use inventory that PASSES check but result would go negative without clamp
+    # poori needs 150 flour for 1 serving — give exactly 150 so it passes but result = 0
     tight_inventory = {
-        "flour": {"quantity": 100, "unit": "g", "expiry_date": None},
+        "flour": {"quantity": 150, "unit": "g", "expiry_date": None},
         "oil":   {"quantity": 500, "unit": "ml", "expiry_date": None},
     }
+    inv_for_engine = {k: dict(v) for k, v in tight_inventory.items()}
     with patch("kitchen.services.dish_checker.load_dishes", return_value=DISHES), \
          patch("kitchen.services.dish_checker.load_inventory", return_value=tight_inventory), \
          patch("kitchen.services.dish_engine.load_dishes", return_value=DISHES), \
-         patch("kitchen.services.dish_engine.load_inventory", return_value={k: dict(v) for k, v in tight_inventory.items()}), \
+         patch("kitchen.services.dish_engine.load_inventory", return_value=inv_for_engine), \
          patch("kitchen.services.dish_engine.save_inventory") as mock_save:
         cook_dish("poori", 1)
         saved = mock_save.call_args[0][0]
+        assert saved["flour"]["quantity"] == 0
         assert saved["flour"]["quantity"] >= 0
