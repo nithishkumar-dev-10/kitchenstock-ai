@@ -33,18 +33,8 @@ app.include_router(dishes.router, tags=["Dishes"])
 app.include_router(inventory.router, tags=["Inventory"])
 app.include_router(recipes.router, tags=["Recipes"])
 app.include_router(shopping.router, tags=["Shopping"])
-from kitchen.services.consumption_analyzer import ConsumptionAnalyzer
 
-analyzer = ConsumptionAnalyzer()
 
-"""
-print("\n🔹 Ingredient Usage:")
-print(analyzer.get_ingredient_usage())
-
-print("\n🔹 Daily Usage:")
-print(analyzer.get_daily_usage())
-
-print("\n🔹 Rice Usage:")
-print(analyzer.get_usage_for_ingredient("rice"))
-
-"""
+@app.get("/health")
+def health():
+    return {"status": "ok", "app": settings.app_name, "version": settings.version}
