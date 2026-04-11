@@ -9,6 +9,7 @@ import json
 import csv
 from pathlib import Path
 from collections import defaultdict
+from datetime import datetime, timedelta
 
 # ── File paths ────────────────────────────────────────────
 ROOT          = Path(__file__).resolve().parent.parent
@@ -20,18 +21,17 @@ OUTPUT_CSV    = ROOT / "data" / "training_data.csv"
 
 # ── Step A: Unit conversion table (count → grams) ─────────
 COUNT_TO_GRAMS = {
-    "egg":    60,    # 1 egg ≈ 60g
-    "bread":  30,    # 1 slice ≈ 30g
-    "banana": 120,   # 1 banana ≈ 120g
-    "apple":  180,   # 1 apple ≈ 180g
-    "orange": 150,   # 1 orange ≈ 150g
-    "mango":  200,   # 1 mango ≈ 200g
-    "lemon":  60,    # 1 lemon ≈ 60g
+    "egg":    60,
+    "bread":  30,
+    "banana": 120,
+    "apple":  180,
+    "orange": 150,
+    "mango":  200,
+    "lemon":  60,
 }
 
 
 def load_files():
-    """Load all 4 JSON files."""
     logs      = json.loads(LOG_FILE.read_text())
     dishes    = json.loads(DISHES_FILE.read_text())
     inventory = json.loads(INVENTORY_FILE.read_text())
@@ -40,20 +40,12 @@ def load_files():
 
 
 def convert_to_grams(ingredient, quantity):
-    """
-    Step A: Convert count-based items to grams.
-    If item is already in grams, return as-is.
-    """
     if ingredient in COUNT_TO_GRAMS:
         return quantity * COUNT_TO_GRAMS[ingredient]
     return quantity
 
 
 def remove_duplicate_logs(logs):
-    """
-    Step D: Remove duplicate dish+date entries.
-    Keep only the first occurrence.
-    """
     seen = set()
     clean_logs = []
     for entry in logs:
@@ -65,12 +57,6 @@ def remove_duplicate_logs(logs):
 
 
 def flatten_logs(logs, dishes):
-    """
-    Step C: Expand each log entry into ingredient-level usage.
-
-    Input:  [{dish: "idli", servings: 2, date: "2026-03-01"}, ...]
-    Output: [{date: "2026-03-01", ingredient: "idli_rice", used_g: 400}, ...]
-    """
     flat = []
 
     for entry in logs:
@@ -78,113 +64,132 @@ def flatten_logs(logs, dishes):
         servings  = entry["servings"]
         date      = entry["date"]
 
-        # Skip if dish not in dishes.json (safety check)
         if dish_name not in dishes:
-            print(f"  WARNING: '{dish_name}' not in dishes.json — skipping")
             continue
 
         for ingredient, qty_per_serving in dishes[dish_name].items():
-            # Step B: Skip the 'steps' key (cooking instructions, not food)
             if ingredient == "steps":
                 continue
 
-            # Multiply by servings to get total used
             total_used = qty_per_serving * servings
-
-            # Step A: Convert count → grams
             total_used_g = convert_to_grams(ingredient, total_used)
 
             flat.append({
-                "date":       date,
+                "date": date,
                 "ingredient": ingredient,
-                "used_g":     round(total_used_g, 2)
+                "used_g": round(total_used_g, 2)
             })
 
     return flat
 
 
 def build_daily_usage(flat_logs):
-    """
-    Aggregate flat log entries by ingredient+date.
-    (An ingredient can appear multiple times in one day from different dishes)
-
-    Returns: {ingredient: {date: total_used_g}}
-    """
     usage = defaultdict(lambda: defaultdict(float))
 
     for entry in flat_logs:
-        ingredient = entry["ingredient"]
-        date       = entry["date"]
-        used_g     = entry["used_g"]
-        usage[ingredient][date] += used_g
+        usage[entry["ingredient"]][entry["date"]] += entry["used_g"]
 
     return usage
 
 
 def build_training_csv(usage, inventory, thresholds):
-    """
-    Step E: Build one row per ingredient per date.
-
-    Each row contains:
-      date, ingredient, used_g (that day),
-      current_stock_g, threshold_g, avg_daily_usage_g
-    """
     rows = []
 
     all_dates = sorted({
-        date
-        for date_map in usage.values()
-        for date in date_map
+        d for m in usage.values() for d in m
     })
 
     for ingredient, date_map in usage.items():
 
-        # Get stock in grams (convert if count-based)
-        inv_data     = inventory.get(ingredient, {})
-        raw_stock    = inv_data.get("quantity", 0)
-        stock_g      = convert_to_grams(ingredient, raw_stock)
+        raw_stock = inventory.get(ingredient, {}).get("quantity", 0)
+        stock_g = convert_to_grams(ingredient, raw_stock)
 
-        # Get threshold in grams
         raw_threshold = thresholds.get(ingredient, 0)
-        threshold_g   = convert_to_grams(ingredient, raw_threshold)
+        threshold_g = convert_to_grams(ingredient, raw_threshold)
 
-        # Compute average daily usage across all logged days
-        total_used    = sum(date_map.values())
-        num_days      = len(all_dates)
-        avg_daily_g   = round(total_used / num_days, 2)
+        total_used = sum(date_map.values())
+        num_days = len(all_dates)
+        avg_daily_g = round(total_used / num_days, 2)
 
-        # Compute days until runout (cap at 90 — beyond 90 is "plenty")
         if avg_daily_g > 0:
-            days_until_runout = round(stock_g / avg_daily_g, 1)
-            days_until_runout = min(days_until_runout, 90)  # cap at 90
+            days_until_runout = min(round(stock_g / avg_daily_g, 1), 90)
         else:
-            days_until_runout = 90  # not used = no runout risk
+            days_until_runout = 90
 
         for date in all_dates:
-            used_today = round(date_map.get(date, 0), 2)
-
             rows.append({
-                "date":              date,
-                "ingredient":        ingredient,
-                "used_g":            used_today,
-                "current_stock_g":   round(stock_g, 2),
-                "threshold_g":       round(threshold_g, 2),
+                "date": date,
+                "ingredient": ingredient,
+                "used_g": round(date_map.get(date, 0), 2),
+                "current_stock_g": round(stock_g, 2),
+                "threshold_g": round(threshold_g, 2),
                 "avg_daily_usage_g": avg_daily_g,
-                "days_until_runout": days_until_runout,  # ← ML label
+                "days_until_runout": days_until_runout,
             })
 
     return rows
 
 
+#  NEW FEATURE ENGINEERING FUNCTION
+def add_features(rows, usage):
+
+    # Precompute usage dates
+    usage_dates = {}
+    for ingredient, date_map in usage.items():
+        usage_dates[ingredient] = sorted([d for d, g in date_map.items() if g > 0])
+
+    enriched = []
+
+    for row in rows:
+        ingredient = row["ingredient"]
+        date_str = row["date"]
+        current_date = datetime.strptime(date_str, "%Y-%m-%d")
+
+        # Feature 1: days_since_last_used
+        active_dates = usage_dates.get(ingredient, [])
+        past_dates = [d for d in active_dates if d < date_str]
+
+        if past_dates:
+            last_used = datetime.strptime(past_dates[-1], "%Y-%m-%d")
+            days_since = (current_date - last_used).days
+        else:
+            days_since = 99
+
+        # Feature 2: usage_last_7_days_g
+        date_map = usage.get(ingredient, {})
+        last_7_total = 0.0
+
+        for i in range(1, 8):
+            d = (current_date - timedelta(days=i)).strftime("%Y-%m-%d")
+            last_7_total += date_map.get(d, 0)
+
+        # Feature 3: stock_to_threshold_ratio
+        stock = row["current_stock_g"]
+        threshold = row["threshold_g"]
+
+        ratio = round(stock / threshold, 3) if threshold > 0 else 1.0
+
+        # Feature 4: is_weekend
+        is_weekend = 1 if current_date.weekday() >= 5 else 0
+
+        enriched.append({
+            **row,
+            "days_since_last_used": days_since,
+            "usage_last_7_days_g": round(last_7_total, 2),
+            "stock_to_threshold_ratio": ratio,
+            "is_weekend": is_weekend,
+        })
+
+    return enriched
+
+
 def save_csv(rows):
-    """Save rows to data/training_data.csv"""
     if not rows:
         print("ERROR: No rows to save.")
         return
 
-    fieldnames = rows[0].keys()
     with open(OUTPUT_CSV, "w", newline="") as f:
-        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer = csv.DictWriter(f, fieldnames=rows[0].keys())
         writer.writeheader()
         writer.writerows(rows)
 
@@ -194,33 +199,28 @@ def save_csv(rows):
 def main():
     print("Loading files...")
     logs, dishes, inventory, thresholds = load_files()
-    print(f"  Logs: {len(logs)} entries")
-    print(f"  Dishes: {len(dishes)} dishes")
-    print(f"  Inventory: {len(inventory)} items")
-    print(f"  Thresholds: {len(thresholds)} items")
 
     print("\nRemoving duplicates...")
     logs = remove_duplicate_logs(logs)
-    print(f"  Clean logs: {len(logs)} entries")
 
-    print("\nFlattening logs into ingredient-level usage...")
+    print("\nFlattening logs...")
     flat = flatten_logs(logs, dishes)
-    print(f"  Flat entries: {len(flat)}")
 
-    print("\nAggregating daily usage per ingredient...")
+    print("\nBuilding usage...")
     usage = build_daily_usage(flat)
-    print(f"  Unique ingredients tracked: {len(usage)}")
 
-    print("\nBuilding training rows...")
+    print("\nBuilding base dataset...")
     rows = build_training_csv(usage, inventory, thresholds)
-    print(f"  Total rows: {len(rows)}")
+
+    print("\nAdding features...")
+    rows = add_features(rows, usage)
 
     print("\nSaving CSV...")
     save_csv(rows)
 
-    print("\nDone. Preview of first 5 rows:")
+    print("\nPreview:")
     for row in rows[:5]:
-        print(f"  {row}")
+        print(row)
 
 
 if __name__ == "__main__":
