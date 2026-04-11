@@ -1,5 +1,0 @@
-dataset:
-  path: data/sample/sample_raw.csv
-
-output:
-  path: data/sample/sample_cleaned.csv
