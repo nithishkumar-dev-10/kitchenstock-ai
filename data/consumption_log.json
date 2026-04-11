@@ -358,5 +358,10 @@
     "dish": "egg_bhurji",
     "servings": 2,
     "date": "2026-04-11"
+  },
+  {
+    "dish": "idli",
+    "servings": 2,
+    "date": "2026-04-10"
   }
 ]

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from kitchen.core.config import settings
-from api.routes import alerts, dishes, inventory, recipes, shopping,consumption,prediction
+from api.routes import alerts, dishes, inventory, recipes, shopping,consumption,prediction,storage
 from kitchen.utils.exceptions import KitchenBaseError
 from kitchen.utils.responses import error_response
 
@@ -25,7 +25,7 @@ async def generic_exception_handler(request: Request, exc: Exception):
         content=error_response(message="An unexpected error occurred"),
     )
 
-
+app.include_router(storage.router, tags=["Storage"]) 
 app.include_router(prediction.router, tags=["Prediction"])
 app.include_router(consumption.router, tags=["Consumption"])
 app.include_router(alerts.router, tags=["Alerts"])

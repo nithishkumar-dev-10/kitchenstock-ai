@@ -43,3 +43,13 @@ async def estimate_missing(from_date: str, to_date: str):
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+@router.post("/consumption/auto-estimate", response_model=APIResponse)
+async def auto_estimate(from_date: str, to_date: str):
+    """Auto-estimate usage for days with no logs."""
+    try:
+        analyzer = ConsumptionAnalyzer()
+        result = analyzer.estimate_missing_days(from_date, to_date)
+        return success_response(data=result, message="Auto estimation complete")
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))

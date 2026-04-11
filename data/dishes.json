@@ -1,40 +1,212 @@
 {
-  "poori": { "flour": 150, "oil": 50 },
+  "poori": {
+    "flour": 150,
+    "oil": 50,
+    "steps": [
+      "Prepare dough using flour and water",
+      "Divide into small balls",
+      "Roll into small circles",
+      "Heat oil in a pan",
+      "Deep fry until golden and puffed"
+    ]
+  },
 
-  "aloo_poori": { "flour": 150, "potato": 200, "oil": 50 },
+  "aloo_poori": {
+    "flour": 150,
+    "potato": 200,
+    "oil": 50,
+    "steps": [
+      "Prepare dough using flour and water",
+      "Boil and mash potatoes",
+      "Roll dough into discs",
+      "Heat oil in a pan",
+      "Deep fry and serve with potato curry"
+    ]
+  },
 
-  "chapati": { "flour": 100, "oil": 10 },
+  "chapati": {
+    "flour": 100,
+    "oil": 10,
+    "steps": [
+      "Prepare soft dough using flour and water",
+      "Divide into balls",
+      "Roll into flat circles",
+      "Cook on hot pan",
+      "Flip until both sides cook"
+    ]
+  },
 
-  "roti": { "flour": 100 },
+  "roti": {
+    "flour": 100,
+    "steps": [
+      "Prepare dough with flour and water",
+      "Roll into thin circles",
+      "Cook on hot pan",
+      "Flip until lightly browned",
+      "Serve hot"
+    ]
+  },
 
-  "butter_roti": { "flour": 100, "butter": 20 },
+  "butter_roti": {
+    "flour": 100,
+    "butter": 20,
+    "steps": [
+      "Prepare dough",
+      "Roll into flat circles",
+      "Cook on hot pan",
+      "Apply butter",
+      "Serve warm"
+    ]
+  },
 
-  "aloo_paratha": { "flour": 120, "potato": 150, "oil": 20 },
+  "aloo_paratha": {
+    "flour": 120,
+    "potato": 150,
+    "oil": 20,
+    "steps": [
+      "Prepare dough",
+      "Boil and mash potatoes",
+      "Stuff into dough",
+      "Roll into flatbread",
+      "Cook on pan with oil"
+    ]
+  },
 
-  "paneer_paratha": { "flour": 120, "paneer": 100, "oil": 20 },
+  "paneer_paratha": {
+    "flour": 120,
+    "paneer": 100,
+    "oil": 20,
+    "steps": [
+      "Prepare dough",
+      "Grate paneer",
+      "Stuff into dough",
+      "Roll flat",
+      "Cook on pan"
+    ]
+  },
 
-  "gobi_paratha": { "flour": 120, "cauliflower": 150, "oil": 20 },
+  "gobi_paratha": {
+    "flour": 120,
+    "cauliflower": 150,
+    "oil": 20,
+    "steps": [
+      "Prepare dough",
+      "Grate cauliflower",
+      "Stuff into dough",
+      "Roll flat",
+      "Cook on pan with oil"
+    ]
+  },
 
-  "dal_tadka": { "toor_dal": 150, "onion": 100, "oil": 30 },
+  "dal_tadka": {
+    "toor_dal": 150,
+    "onion": 100,
+    "oil": 30,
+    "steps": [
+      "Boil toor dal",
+      "Heat oil",
+      "Saute onion",
+      "Add dal",
+      "Simmer and serve"
+    ]
+  },
 
-  "dal_fry": { "moong_dal": 150, "onion": 100, "oil": 30 },
+  "dal_fry": {
+    "moong_dal": 150,
+    "onion": 100,
+    "oil": 30,
+    "steps": [
+      "Cook moong dal",
+      "Heat oil",
+      "Saute onion",
+      "Add dal",
+      "Cook and serve"
+    ]
+  },
 
-  "dal_rice": { "rice": 150, "toor_dal": 150, "onion": 50, "oil": 30 },
+  "dal_rice": {
+    "rice": 150,
+    "toor_dal": 150,
+    "onion": 50,
+    "oil": 30,
+    "steps": [
+      "Cook rice",
+      "Boil dal",
+      "Saute onion",
+      "Mix dal and rice",
+      "Serve hot"
+    ]
+  },
 
-  "jeera_rice": { "rice": 200, "cumin": 5, "oil": 20 },
+  "jeera_rice": {
+    "rice": 200,
+    "cumin": 5,
+    "oil": 20,
+    "steps": [
+      "Cook rice",
+      "Heat oil",
+      "Add cumin seeds",
+      "Mix rice",
+      "Serve hot"
+    ]
+  },
 
-  "veg_pulao": { "rice": 200, "carrot": 50, "beans": 50, "peas": 50 },
+  "veg_pulao": {
+    "rice": 200,
+    "carrot": 50,
+    "beans": 50,
+    "peas": 50,
+    "steps": [
+      "Wash rice",
+      "Saute vegetables",
+      "Add rice and water",
+      "Cook until done",
+      "Serve hot"
+    ]
+  },
 
-  "fried_rice": { "rice": 200, "carrot": 50, "beans": 50, "egg": 2, "soy_sauce": 10 },
+  "fried_rice": {
+    "rice": 200,
+    "carrot": 50,
+    "beans": 50,
+    "egg": 2,
+    "soy_sauce": 10,
+    "steps": [
+      "Cook rice and cool",
+      "Scramble eggs",
+      "Saute vegetables",
+      "Add rice",
+      "Mix with soy sauce"
+    ]
+  },
 
-  "egg_fried_rice": { "rice": 200, "egg": 2, "oil": 20, "soy_sauce": 10 },
+  "egg_fried_rice": {
+    "rice": 200,
+    "egg": 2,
+    "oil": 20,
+    "soy_sauce": 10,
+    "steps": [
+      "Cook rice",
+      "Scramble eggs",
+      "Add rice",
+      "Mix well",
+      "Cook and serve"
+    ]
+  },
 
   "biryani": {
     "basmati_rice": 250,
     "chicken": 400,
     "onion": 100,
     "oil": 40,
-    "curd": 50
+    "curd": 50,
+    "steps": [
+      "Marinate chicken",
+      "Cook rice",
+      "Fry onions",
+      "Layer rice and chicken",
+      "Cook on low flame"
+    ]
   },
 
   "chicken_biryani": {
@@ -42,51 +214,263 @@
     "chicken": 400,
     "onion": 150,
     "tomato": 100,
-    "garam_masala": 10
+    "garam_masala": 10,
+    "steps": [
+      "Marinate chicken",
+      "Cook rice",
+      "Saute onion and tomato",
+      "Add chicken",
+      "Layer with rice"
+    ]
   },
 
   "veg_biryani": {
     "basmati_rice": 250,
     "carrot": 100,
     "beans": 100,
-    "potato": 100
+    "potato": 100,
+    "steps": [
+      "Cook rice",
+      "Saute vegetables",
+      "Add spices",
+      "Mix rice",
+      "Cook on low heat"
+    ]
   },
 
-  "egg_curry": { "egg": 3, "onion": 100, "tomato": 100, "oil": 30 },
+  "egg_curry": {
+    "egg": 3,
+    "onion": 100,
+    "tomato": 100,
+    "oil": 30,
+    "steps": [
+      "Boil eggs",
+      "Saute onion and tomato",
+      "Add spices",
+      "Add eggs",
+      "Cook gravy"
+    ]
+  },
 
-  "egg_bhurji": { "egg": 3, "onion": 100, "oil": 20 },
+  "egg_bhurji": {
+    "egg": 3,
+    "onion": 100,
+    "oil": 20,
+    "steps": [
+      "Heat oil",
+      "Saute onion",
+      "Add eggs",
+      "Scramble",
+      "Cook and serve"
+    ]
+  },
 
-  "omelette_bread": { "egg": 2, "bread": 2, "oil": 10 },
+  "omelette_bread": {
+    "egg": 2,
+    "bread": 2,
+    "oil": 10,
+    "steps": [
+      "Beat eggs in a bowl",
+      "Heat oil in a pan",
+      "Cook omelette",
+      "Toast bread slices",
+      "Serve together"
+    ]
+  },
 
-  "veg_cutlet": { "potato": 150, "carrot": 100, "beans": 100, "oil": 30 },
+  "veg_cutlet": {
+    "potato": 150,
+    "carrot": 100,
+    "beans": 100,
+    "oil": 30,
+    "steps": [
+      "Boil and mash potatoes",
+      "Mix vegetables",
+      "Shape into cutlets",
+      "Heat oil in pan",
+      "Fry until golden"
+    ]
+  },
 
-  "aloo_bhaji": { "potato": 200, "oil": 30 },
+  "aloo_bhaji": {
+    "potato": 200,
+    "oil": 30,
+    "steps": [
+      "Boil and peel potatoes",
+      "Heat oil in pan",
+      "Saute potatoes",
+      "Add salt and spices",
+      "Cook until slightly crispy"
+    ]
+  },
 
-  "cabbage_poriyal": { "cabbage": 200, "oil": 20 },
+  "cabbage_poriyal": {
+    "cabbage": 200,
+    "oil": 20,
+    "steps": [
+      "Chop cabbage finely",
+      "Heat oil in pan",
+      "Saute cabbage",
+      "Cook until soft",
+      "Serve hot"
+    ]
+  },
 
-  "cauliflower_fry": { "cauliflower": 200, "oil": 30 },
+  "cauliflower_fry": {
+    "cauliflower": 200,
+    "oil": 30,
+    "steps": [
+      "Cut cauliflower into pieces",
+      "Heat oil in pan",
+      "Fry cauliflower",
+      "Cook until golden",
+      "Serve hot"
+    ]
+  },
 
-  "mushroom_fry": { "mushroom": 200, "oil": 30 },
+  "mushroom_fry": {
+    "mushroom": 200,
+    "oil": 30,
+    "steps": [
+      "Clean mushrooms",
+      "Heat oil in pan",
+      "Saute mushrooms",
+      "Cook until soft",
+      "Serve hot"
+    ]
+  },
 
-  "veg_noodles": { "noodles": 200, "carrot": 50, "capsicum": 50 },
+  "veg_noodles": {
+    "noodles": 200,
+    "carrot": 50,
+    "capsicum": 50,
+    "steps": [
+      "Boil noodles",
+      "Heat pan",
+      "Saute vegetables",
+      "Add noodles",
+      "Mix and serve"
+    ]
+  },
 
-  "egg_noodles": { "noodles": 200, "egg": 2, "oil": 20 },
+  "egg_noodles": {
+    "noodles": 200,
+    "egg": 2,
+    "oil": 20,
+    "steps": [
+      "Boil noodles",
+      "Scramble eggs",
+      "Add noodles",
+      "Mix with oil",
+      "Cook and serve"
+    ]
+  },
 
-  "noodles": { "noodles": 200, "carrot": 50, "capsicum": 50, "oil": 20 },
+  "noodles": {
+    "noodles": 200,
+    "carrot": 50,
+    "capsicum": 50,
+    "oil": 20,
+    "steps": [
+      "Boil noodles",
+      "Heat oil",
+      "Saute vegetables",
+      "Add noodles",
+      "Mix well"
+    ]
+  },
 
-  "pasta": { "pasta": 200, "cheese": 50, "butter": 20 },
+  "pasta": {
+    "pasta": 200,
+    "cheese": 50,
+    "butter": 20,
+    "steps": [
+      "Boil pasta",
+      "Heat butter",
+      "Add pasta",
+      "Add cheese",
+      "Mix and serve"
+    ]
+  },
 
-  "tomato_rice": { "rice": 200, "tomato": 150, "oil": 20 },
+  "tomato_rice": {
+    "rice": 200,
+    "tomato": 150,
+    "oil": 20,
+    "steps": [
+      "Cook rice",
+      "Saute tomatoes",
+      "Cook until soft",
+      "Mix with rice",
+      "Serve hot"
+    ]
+  },
 
-  "curd_rice": { "rice": 200, "curd": 150 },
+  "curd_rice": {
+    "rice": 200,
+    "curd": 150,
+    "steps": [
+      "Cook rice and cool",
+      "Add curd",
+      "Mix well",
+      "Adjust salt",
+      "Serve chilled"
+    ]
+  },
 
-  "lemon_rice": { "rice": 200, "lemon": 1, "oil": 20 },
+  "lemon_rice": {
+    "rice": 200,
+    "lemon": 1,
+    "oil": 20,
+    "steps": [
+      "Cook rice",
+      "Heat oil",
+      "Add lemon juice",
+      "Mix rice",
+      "Serve fresh"
+    ]
+  },
 
-  "coconut_rice": { "rice": 200, "coconut": 100, "oil": 20 },
+  "coconut_rice": {
+    "rice": 200,
+    "coconut": 100,
+    "oil": 20,
+    "steps": [
+      "Cook rice",
+      "Grate coconut",
+      "Heat oil",
+      "Mix coconut with rice",
+      "Serve hot"
+    ]
+  },
 
-  "tamarind_rice": { "rice": 200, "tamarind": 20, "oil": 20 },
+  "tamarind_rice": {
+    "rice": 200,
+    "tamarind": 20,
+    "oil": 20,
+    "steps": [
+      "Cook rice",
+      "Prepare tamarind extract",
+      "Heat oil",
+      "Mix with rice",
+      "Serve hot"
+    ]
+  },
 
-  "pongal": { "rice": 150, "moong_dal": 100, "ghee": 20, "cumin": 5, "black_pepper": 5 },
+  "pongal": {
+    "rice": 150,
+    "moong_dal": 100,
+    "ghee": 20,
+    "cumin": 5,
+    "black_pepper": 5,
+    "steps": [
+      "Cook rice and dal together",
+      "Heat ghee",
+      "Add cumin and pepper",
+      "Mix into rice",
+      "Serve hot"
+    ]
+  },
 
   "sambar": {
     "toor_dal": 150,
@@ -94,7 +478,14 @@
     "tomato": 100,
     "carrot": 50,
     "beans": 50,
-    "tamarind": 20
+    "tamarind": 20,
+    "steps": [
+      "Cook toor dal",
+      "Prepare tamarind water",
+      "Add vegetables",
+      "Mix dal",
+      "Simmer and serve"
+    ]
   },
 
   "rasam": {
@@ -102,56 +493,296 @@
     "tamarind": 20,
     "garlic": 20,
     "black_pepper": 5,
-    "cumin": 5
+    "cumin": 5,
+    "steps": [
+      "Prepare tamarind water",
+      "Add tomato and garlic",
+      "Boil mixture",
+      "Add spices",
+      "Simmer and serve"
+    ]
   },
 
-  "idli": { "idli_rice": 200, "urad_dal": 100 },
+  "idli": {
+    "idli_rice": 200,
+    "urad_dal": 100,
+    "steps": [
+      "Soak rice and dal",
+      "Grind to batter",
+      "Ferment overnight",
+      "Pour into molds",
+      "Steam until cooked"
+    ]
+  },
 
-  "dosa": { "idli_rice": 200, "urad_dal": 100, "oil": 20 },
+  "dosa": {
+    "idli_rice": 200,
+    "urad_dal": 100,
+    "oil": 20,
+    "steps": [
+      "Prepare batter",
+      "Heat pan",
+      "Spread batter",
+      "Add oil",
+      "Cook until crisp"
+    ]
+  },
 
-  "ghee_dosa": { "idli_rice": 200, "urad_dal": 100, "ghee": 30 },
+  "ghee_dosa": {
+    "idli_rice": 200,
+    "urad_dal": 100,
+    "ghee": 30,
+    "steps": [
+      "Prepare dosa batter",
+      "Heat a pan",
+      "Spread batter thinly",
+      "Add ghee on top",
+      "Cook until crispy"
+    ]
+  },
 
   "masala_dosa": {
     "idli_rice": 200,
     "urad_dal": 100,
     "potato": 150,
     "onion": 50,
-    "oil": 30
+    "oil": 30,
+    "steps": [
+      "Prepare dosa batter",
+      "Cook dosa on pan",
+      "Prepare potato filling",
+      "Place filling inside dosa",
+      "Fold and serve hot"
+    ]
   },
 
-  "egg_dosa": { "idli_rice": 200, "egg": 2, "oil": 20 },
+  "egg_dosa": {
+    "idli_rice": 200,
+    "egg": 2,
+    "oil": 20,
+    "steps": [
+      "Prepare dosa batter",
+      "Spread batter on pan",
+      "Crack egg on top",
+      "Add oil",
+      "Cook until done"
+    ]
+  },
 
-  "kootu": { "moong_dal": 100, "carrot": 100, "beans": 100, "coconut": 50 },
+  "kootu": {
+    "moong_dal": 100,
+    "carrot": 100,
+    "beans": 100,
+    "coconut": 50,
+    "steps": [
+      "Cook moong dal",
+      "Boil vegetables",
+      "Grind coconut",
+      "Mix everything",
+      "Cook and serve"
+    ]
+  },
 
-  "poriyal": { "beans": 150, "coconut": 50, "oil": 20 },
+  "poriyal": {
+    "beans": 150,
+    "coconut": 50,
+    "oil": 20,
+    "steps": [
+      "Chop beans",
+      "Heat oil",
+      "Saute beans",
+      "Add coconut",
+      "Cook and serve"
+    ]
+  },
 
-  "avial": { "carrot": 100, "beans": 100, "coconut": 100, "curd": 50 },
+  "avial": {
+    "carrot": 100,
+    "beans": 100,
+    "coconut": 100,
+    "curd": 50,
+    "steps": [
+      "Cut vegetables",
+      "Cook vegetables",
+      "Grind coconut",
+      "Add curd",
+      "Mix and serve"
+    ]
+  },
 
-  "rajma": { "rajma": 150, "onion": 100, "oil": 30 },
+  "rajma": {
+    "rajma": 150,
+    "onion": 100,
+    "oil": 30,
+    "steps": [
+      "Soak rajma overnight",
+      "Cook until soft",
+      "Saute onion",
+      "Add rajma",
+      "Simmer and serve"
+    ]
+  },
 
-  "chole": { "chickpeas": 150, "onion": 100, "oil": 30 },
+  "chole": {
+    "chickpeas": 150,
+    "onion": 100,
+    "oil": 30,
+    "steps": [
+      "Soak chickpeas",
+      "Cook until soft",
+      "Saute onion",
+      "Add chickpeas",
+      "Cook and serve"
+    ]
+  },
 
-  "paneer_butter_masala": { "paneer": 200, "butter": 50, "tomato": 100 },
+  "paneer_butter_masala": {
+    "paneer": 200,
+    "butter": 50,
+    "tomato": 100,
+    "steps": [
+      "Heat butter",
+      "Cook tomato gravy",
+      "Add paneer",
+      "Simmer",
+      "Serve hot"
+    ]
+  },
 
-  "sandwich": { "bread": 2, "butter": 20, "cheese": 30 },
+  "sandwich": {
+    "bread": 2,
+    "butter": 20,
+    "cheese": 30,
+    "steps": [
+      "Apply butter on bread",
+      "Add cheese",
+      "Place another slice",
+      "Toast or grill",
+      "Serve hot"
+    ]
+  },
 
-  "veg_sandwich": { "bread": 2, "cucumber": 50, "tomato": 50 },
+  "veg_sandwich": {
+    "bread": 2,
+    "cucumber": 50,
+    "tomato": 50,
+    "steps": [
+      "Slice vegetables",
+      "Place on bread",
+      "Add seasoning",
+      "Close sandwich",
+      "Serve fresh"
+    ]
+  },
 
-  "salad": { "cucumber": 100, "carrot": 100, "lettuce": 100 },
+  "salad": {
+    "cucumber": 100,
+    "carrot": 100,
+    "lettuce": 100,
+    "steps": [
+      "Chop vegetables",
+      "Mix in bowl",
+      "Add salt",
+      "Toss well",
+      "Serve fresh"
+    ]
+  },
 
-  "fruit_salad": { "apple": 1, "banana": 1, "orange": 1 },
+  "fruit_salad": {
+    "apple": 1,
+    "banana": 1,
+    "orange": 1,
+    "steps": [
+      "Cut fruits",
+      "Mix in bowl",
+      "Add honey if needed",
+      "Chill briefly",
+      "Serve fresh"
+    ]
+  },
 
-  "banana_shake": { "milk": 300, "banana": 2 },
+  "banana_shake": {
+    "milk": 300,
+    "banana": 2,
+    "steps": [
+      "Peel bananas",
+      "Add milk",
+      "Blend smoothly",
+      "Pour into glass",
+      "Serve chilled"
+    ]
+  },
 
-  "milkshake": { "milk": 300, "mango": 1, "sugar": 20 },
+  "milkshake": {
+    "milk": 300,
+    "mango": 1,
+    "sugar": 20,
+    "steps": [
+      "Cut mango pieces",
+      "Add milk and sugar",
+      "Blend well",
+      "Pour into glass",
+      "Serve chilled"
+    ]
+  },
 
-  "coffee": { "milk": 100, "sugar": 10 },
+  "coffee": {
+    "milk": 100,
+    "sugar": 10,
+    "steps": [
+      "Boil milk",
+      "Add coffee powder",
+      "Add sugar",
+      "Mix well",
+      "Serve hot"
+    ]
+  },
 
-  "tea": { "milk": 100, "sugar": 10 },
+  "tea": {
+    "milk": 100,
+    "sugar": 10,
+    "steps": [
+      "Boil milk",
+      "Add tea powder",
+      "Add sugar",
+      "Simmer briefly",
+      "Serve hot"
+    ]
+  },
 
-  "chocolate_milk": { "milk": 200, "chocolate": 50 },
+  "chocolate_milk": {
+    "milk": 200,
+    "chocolate": 50,
+    "steps": [
+      "Heat milk",
+      "Add chocolate",
+      "Stir until melted",
+      "Pour into glass",
+      "Serve warm or cold"
+    ]
+  },
 
-  "ice_cream": { "ice_cream": 200 },
+  "ice_cream": {
+    "ice_cream": 200,
+    "steps": [
+      "Take ice cream from freezer",
+      "Scoop into bowl",
+      "Let soften slightly",
+      "Serve immediately",
+      "Enjoy"
+    ]
+  },
 
-  "jam_bread": { "bread": 2, "jam": 20 }
+  "jam_bread": {
+    "bread": 2,
+    "jam": 20,
+    "steps": [
+      "Take bread slices",
+      "Apply jam evenly",
+      "Place slices together",
+      "Cut if needed",
+      "Serve"
+    ]
+  }
 }
+

@@ -33,8 +33,9 @@ def check_ingredients(dish_name: str, servings: int) -> dict:
         })
 
     return {
-        "dish": dish_name,
-        "servings": servings,
-        "can_cook": can_cook,
-        "ingredients": result
-    }
+    "dish": dish_name,
+    "servings": servings,
+    "can_cook": can_cook,
+    "ingredients": result,
+    "steps": dishes[dish_name].get("steps", [])
+}
