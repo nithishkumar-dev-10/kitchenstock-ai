@@ -95,5 +95,8 @@
   "curry_leaves": { "quantity": 200, "unit": "g", "expiry_date": "2026-04-12" },
   "hing": { "quantity": 50, "unit": "g", "expiry_date": null },
   "semolina": { "quantity": 3000, "unit": "g", "expiry_date": null },
-  "idli_rice": { "quantity": 10000, "unit": "g", "expiry_date": null }
+  "idli_rice": { "quantity": 10000, "unit": "g", "expiry_date": null },
+  "cucumber": { "quantity": 1000, "unit": "g", "expiry_date": "2026-04-16" },
+  "lettuce":  { "quantity": 500,  "unit": "g", "expiry_date": "2026-04-14" },
+  "mushroom": { "quantity": 500,  "unit": "g", "expiry_date": "2026-04-14" }
 }

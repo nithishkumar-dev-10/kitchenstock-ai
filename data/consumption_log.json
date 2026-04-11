@@ -5,6 +5,11 @@
     "date": "2026-03-01"
   },
   {
+    "dish": "sambar",
+    "servings": 2,
+    "date": "2026-03-01"
+  },
+  {
     "dish": "dosa",
     "servings": 2,
     "date": "2026-03-02"
@@ -25,7 +30,7 @@
     "date": "2026-03-03"
   },
   {
-    "dish": "vegetable_upma",
+    "dish": "pongal",
     "servings": 2,
     "date": "2026-03-04"
   },
@@ -80,7 +85,7 @@
     "date": "2026-03-10"
   },
   {
-    "dish": "raita",
+    "dish": "curd_rice",
     "servings": 2,
     "date": "2026-03-10"
   },
@@ -160,12 +165,12 @@
     "date": "2026-03-21"
   },
   {
-    "dish": "fish_fry",
+    "dish": "dal_fry",
     "servings": 2,
     "date": "2026-03-21"
   },
   {
-    "dish": "mutton_chukka",
+    "dish": "egg_curry",
     "servings": 2,
     "date": "2026-03-22"
   },
@@ -247,6 +252,96 @@
   {
     "dish": "idli",
     "servings": 2,
+    "date": "2026-04-01"
+  },
+  {
+    "dish": "sambar",
+    "servings": 2,
+    "date": "2026-04-01"
+  },
+  {
+    "dish": "dosa",
+    "servings": 2,
+    "date": "2026-04-02"
+  },
+  {
+    "dish": "ghee_dosa",
+    "servings": 2,
+    "date": "2026-04-02"
+  },
+  {
+    "dish": "pongal",
+    "servings": 2,
+    "date": "2026-04-03"
+  },
+  {
+    "dish": "rasam",
+    "servings": 2,
+    "date": "2026-04-03"
+  },
+  {
+    "dish": "chapati",
+    "servings": 2,
+    "date": "2026-04-04"
+  },
+  {
+    "dish": "dal_tadka",
+    "servings": 2,
+    "date": "2026-04-04"
+  },
+  {
+    "dish": "jeera_rice",
+    "servings": 2,
+    "date": "2026-04-05"
+  },
+  {
+    "dish": "egg_curry",
+    "servings": 2,
+    "date": "2026-04-05"
+  },
+  {
+    "dish": "biryani",
+    "servings": 4,
+    "date": "2026-04-06"
+  },
+  {
+    "dish": "curd_rice",
+    "servings": 2,
+    "date": "2026-04-06"
+  },
+  {
+    "dish": "aloo_paratha",
+    "servings": 2,
+    "date": "2026-04-07"
+  },
+  {
+    "dish": "tea",
+    "servings": 2,
+    "date": "2026-04-07"
+  },
+  {
+    "dish": "idli",
+    "servings": 2,
+    "date": "2026-04-08"
+  },
+  {
+    "dish": "coconut_rice",
+    "servings": 2,
+    "date": "2026-04-08"
+  },
+  {
+    "dish": "masala_dosa",
+    "servings": 2,
+    "date": "2026-04-09"
+  },
+  {
+    "dish": "sambar",
+    "servings": 2,
+    "date": "2026-04-09"
+  },
+  {
+    "dish": "idli",
+    "servings": 2,
     "date": "2026-04-10"
   },
   {
@@ -255,8 +350,13 @@
     "date": "2026-04-10"
   },
   {
-    "dish": "idli",
+    "dish": "coffee",
     "servings": 2,
-    "date": "2026-04-10"
+    "date": "2026-04-11"
+  },
+  {
+    "dish": "egg_bhurji",
+    "servings": 2,
+    "date": "2026-04-11"
   }
 ]

@@ -1,212 +1,92 @@
 {
-  "poori": {
-    "flour": 150,
-    "oil": 50
-  },
+  "poori": { "flour": 150, "oil": 50 },
 
-  "aloo_poori": {
-    "flour": 150,
-    "potato": 200,
-    "oil": 50
-  },
+  "aloo_poori": { "flour": 150, "potato": 200, "oil": 50 },
 
-  "roti": {
-    "flour": 100
-  },
+  "chapati": { "flour": 100, "oil": 10 },
 
-  "butter_roti": {
-    "flour": 100,
-    "butter": 20
-  },
+  "roti": { "flour": 100 },
 
-  "aloo_paratha": {
-    "flour": 120,
-    "potato": 150,
-    "oil": 20
-  },
+  "butter_roti": { "flour": 100, "butter": 20 },
 
-  "paneer_paratha": {
-    "flour": 120,
-    "paneer": 100,
-    "oil": 20
-  },
+  "aloo_paratha": { "flour": 120, "potato": 150, "oil": 20 },
 
-  "gobi_paratha": {
-    "flour": 120,
-    "cauliflower": 150,
-    "oil": 20
-  },
+  "paneer_paratha": { "flour": 120, "paneer": 100, "oil": 20 },
 
-  "dal_tadka": {
-    "toor_dal": 150,
+  "gobi_paratha": { "flour": 120, "cauliflower": 150, "oil": 20 },
+
+  "dal_tadka": { "toor_dal": 150, "onion": 100, "oil": 30 },
+
+  "dal_fry": { "moong_dal": 150, "onion": 100, "oil": 30 },
+
+  "dal_rice": { "rice": 150, "toor_dal": 150, "onion": 50, "oil": 30 },
+
+  "jeera_rice": { "rice": 200, "cumin": 5, "oil": 20 },
+
+  "veg_pulao": { "rice": 200, "carrot": 50, "beans": 50, "peas": 50 },
+
+  "fried_rice": { "rice": 200, "carrot": 50, "beans": 50, "egg": 2, "soy_sauce": 10 },
+
+  "egg_fried_rice": { "rice": 200, "egg": 2, "oil": 20, "soy_sauce": 10 },
+
+  "biryani": {
+    "basmati_rice": 250,
+    "chicken": 400,
     "onion": 100,
-    "oil": 30
+    "oil": 40,
+    "curd": 50
   },
 
-  "dal_fry": {
-    "moong_dal": 150,
-    "onion": 100,
-    "oil": 30
-  },
-
-  "jeera_rice": {
-    "rice": 200,
-    "cumin": 5,
-    "oil": 20
-  },
-
-  "veg_pulao": {
-    "rice": 200,
-    "carrot": 50,
-    "beans": 50,
-    "peas": 50
-  },
-
-  "egg_curry": {
-    "egg": 3,
-    "onion": 100,
+  "chicken_biryani": {
+    "basmati_rice": 250,
+    "chicken": 400,
+    "onion": 150,
     "tomato": 100,
-    "oil": 30
+    "garam_masala": 10
   },
 
-  "egg_bhurji": {
-    "egg": 3,
-    "onion": 100,
-    "oil": 20
-  },
-
-  "omelette_bread": {
-    "egg": 2,
-    "bread": 2,
-    "oil": 10
-  },
-
-  "veg_cutlet": {
-    "potato": 150,
+  "veg_biryani": {
+    "basmati_rice": 250,
     "carrot": 100,
     "beans": 100,
-    "oil": 30
+    "potato": 100
   },
 
-  "aloo_bhaji": {
-    "potato": 200,
-    "oil": 30
-  },
+  "egg_curry": { "egg": 3, "onion": 100, "tomato": 100, "oil": 30 },
 
-  "cabbage_poriyal": {
-    "cabbage": 200,
-    "oil": 20
-  },
+  "egg_bhurji": { "egg": 3, "onion": 100, "oil": 20 },
 
-  "cauliflower_fry": {
-    "cauliflower": 200,
-    "oil": 30
-  },
+  "omelette_bread": { "egg": 2, "bread": 2, "oil": 10 },
 
-  "mushroom_fry": {
-    "mushroom": 200,
-    "oil": 30
-  },
+  "veg_cutlet": { "potato": 150, "carrot": 100, "beans": 100, "oil": 30 },
 
-  "egg_fried_rice": {
-    "rice": 200,
-    "egg": 2,
-    "oil": 20,
-    "soy_sauce": 10
-  },
+  "aloo_bhaji": { "potato": 200, "oil": 30 },
 
-  "veg_noodles": {
-    "noodles": 200,
-    "carrot": 50,
-    "capsicum": 50
-  },
+  "cabbage_poriyal": { "cabbage": 200, "oil": 20 },
 
-  "egg_noodles": {
-    "noodles": 200,
-    "egg": 2,
-    "oil": 20
-  },
+  "cauliflower_fry": { "cauliflower": 200, "oil": 30 },
 
-  "tomato_rice": {
-    "rice": 200,
-    "tomato": 150,
-    "oil": 20
-  },
+  "mushroom_fry": { "mushroom": 200, "oil": 30 },
 
-  "onion_uttapam": {
-    "idli_rice": 200,
-    "onion": 100
-  },
+  "veg_noodles": { "noodles": 200, "carrot": 50, "capsicum": 50 },
 
-  "veg_uttapam": {
-    "idli_rice": 200,
-    "carrot": 50,
-    "onion": 50,
-    "capsicum": 50
-  },
+  "egg_noodles": { "noodles": 200, "egg": 2, "oil": 20 },
 
-  "plain_uttapam": {
-    "idli_rice": 200
-  },
+  "noodles": { "noodles": 200, "carrot": 50, "capsicum": 50, "oil": 20 },
 
-  "banana_dessert": {
-    "banana": 2,
-    "honey": 20
-  },
+  "pasta": { "pasta": 200, "cheese": 50, "butter": 20 },
 
-  "fruit_bowl": {
-    "apple": 1,
-    "banana": 1,
-    "mango": 1
-  },
+  "tomato_rice": { "rice": 200, "tomato": 150, "oil": 20 },
 
-  "dry_fruit_snack": {
-    "cashew": 50,
-    "almond": 50
-  },
+  "curd_rice": { "rice": 200, "curd": 150 },
 
-  "peanut_chikki": {
-    "peanut": 100,
-    "jaggery": 50
-  },
+  "lemon_rice": { "rice": 200, "lemon": 1, "oil": 20 },
 
-  "sweet_corn_snack": {
-    "sweet_corn": 200,
-    "butter": 20
-  },
+  "coconut_rice": { "rice": 200, "coconut": 100, "oil": 20 },
 
-  "idli": {
-    "idli_rice": 200,
-    "urad_dal": 100
-  },
+  "tamarind_rice": { "rice": 200, "tamarind": 20, "oil": 20 },
 
-  "dosa": {
-    "idli_rice": 200,
-    "urad_dal": 100,
-    "oil": 20
-  },
-
-  "ghee_dosa": {
-    "idli_rice": 200,
-    "urad_dal": 100,
-    "ghee": 30
-  },
-
-  "masala_dosa": {
-    "idli_rice": 200,
-    "urad_dal": 100,
-    "potato": 150,
-    "onion": 50,
-    "oil": 30
-  },
-
-  "pongal": {
-    "rice": 150,
-    "moong_dal": 100,
-    "ghee": 20,
-    "cumin": 5,
-    "black_pepper": 5
-  },
+  "pongal": { "rice": 150, "moong_dal": 100, "ghee": 20, "cumin": 5, "black_pepper": 5 },
 
   "sambar": {
     "toor_dal": 150,
@@ -225,201 +105,53 @@
     "cumin": 5
   },
 
-  "curd_rice": {
-    "rice": 200,
-    "curd": 150
-  },
+  "idli": { "idli_rice": 200, "urad_dal": 100 },
 
-  "lemon_rice": {
-    "rice": 200,
-    "lemon": 1,
-    "oil": 20
-  },
+  "dosa": { "idli_rice": 200, "urad_dal": 100, "oil": 20 },
 
-  "coconut_rice": {
-    "rice": 200,
-    "coconut": 100,
-    "oil": 20
-  },
+  "ghee_dosa": { "idli_rice": 200, "urad_dal": 100, "ghee": 30 },
 
-  "tamarind_rice": {
-    "rice": 200,
-    "tamarind": 20,
-    "oil": 20
-  },
-
-  "vegetable_upma": {
-    "rava": 150,
-    "onion": 50,
-    "carrot": 50,
-    "beans": 50
-  },
-
-  "rava_kesari": {
-    "rava": 100,
-    "sugar": 100,
-    "ghee": 20
-  },
-
-  "poha": {
-    "rice": 150,
-    "onion": 50,
-    "oil": 20
-  },
-
-  "egg_dosa": {
+  "masala_dosa": {
     "idli_rice": 200,
-    "egg": 2,
-    "oil": 20
-  },
-
-  "chicken_biryani": {
-    "basmati_rice": 250,
-    "chicken": 400,
-    "onion": 150,
-    "tomato": 100,
-    "garam_masala": 10
-  },
-
-  "veg_biryani": {
-    "basmati_rice": 250,
-    "carrot": 100,
-    "beans": 100,
-    "potato": 100
-  },
-
-  "fish_fry": {
-    "fish": 300,
-    "oil": 30,
-    "chili_powder": 10
-  },
-
-  "mutton_chukka": {
-    "mutton": 400,
-    "onion": 150,
-    "oil": 40
-  },
-
-  "kootu": {
-    "moong_dal": 100,
-    "carrot": 100,
-    "beans": 100,
-    "coconut": 50
-  },
-
-  "poriyal": {
-    "beans": 150,
-    "coconut": 50,
-    "oil": 20
-  },
-
-  "avial": {
-    "carrot": 100,
-    "beans": 100,
-    "coconut": 100,
-    "curd": 50
-  },
-
-  "chapati": {
-    "flour": 100,
-    "oil": 10
-  },
-
-  "rajma": {
-    "rajma": 150,
-    "onion": 100,
+    "urad_dal": 100,
+    "potato": 150,
+    "onion": 50,
     "oil": 30
   },
 
-  "chole": {
-    "chickpeas": 150,
-    "onion": 100,
-    "oil": 30
-  },
+  "egg_dosa": { "idli_rice": 200, "egg": 2, "oil": 20 },
 
-  "paneer_butter_masala": {
-    "paneer": 200,
-    "butter": 50,
-    "tomato": 100
-  },
+  "kootu": { "moong_dal": 100, "carrot": 100, "beans": 100, "coconut": 50 },
 
-  "fried_rice": {
-    "rice": 200,
-    "carrot": 50,
-    "beans": 50,
-    "egg": 2,
-    "soy_sauce": 10
-  },
+  "poriyal": { "beans": 150, "coconut": 50, "oil": 20 },
 
-  "noodles": {
-    "noodles": 200,
-    "carrot": 50,
-    "capsicum": 50,
-    "oil": 20
-  },
+  "avial": { "carrot": 100, "beans": 100, "coconut": 100, "curd": 50 },
 
-  "pasta": {
-    "pasta": 200,
-    "cheese": 50,
-    "butter": 20
-  },
+  "rajma": { "rajma": 150, "onion": 100, "oil": 30 },
 
-  "sandwich": {
-    "bread": 2,
-    "butter": 20,
-    "cheese": 30
-  },
+  "chole": { "chickpeas": 150, "onion": 100, "oil": 30 },
 
-  "veg_sandwich": {
-    "bread": 2,
-    "cucumber": 50,
-    "tomato": 50
-  },
+  "paneer_butter_masala": { "paneer": 200, "butter": 50, "tomato": 100 },
 
-  "salad": {
-    "cucumber": 100,
-    "carrot": 100,
-    "lettuce": 100
-  },
+  "sandwich": { "bread": 2, "butter": 20, "cheese": 30 },
 
-  "fruit_salad": {
-    "apple": 1,
-    "banana": 1,
-    "orange": 1
-  },
+  "veg_sandwich": { "bread": 2, "cucumber": 50, "tomato": 50 },
 
-  "banana_shake": {
-    "milk": 300,
-    "banana": 2
-  },
+  "salad": { "cucumber": 100, "carrot": 100, "lettuce": 100 },
 
-  "milkshake": {
-    "milk": 300,
-    "mango": 1,
-    "sugar": 20
-  },
+  "fruit_salad": { "apple": 1, "banana": 1, "orange": 1 },
 
-  "coffee": {
-    "milk": 100,
-    "sugar": 10
-  },
+  "banana_shake": { "milk": 300, "banana": 2 },
 
-  "tea": {
-    "milk": 100,
-    "sugar": 10
-  },
+  "milkshake": { "milk": 300, "mango": 1, "sugar": 20 },
 
-  "chocolate_milk": {
-    "milk": 200,
-    "chocolate": 50
-  },
+  "coffee": { "milk": 100, "sugar": 10 },
 
-  "ice_cream": {
-    "ice_cream": 200
-  },
+  "tea": { "milk": 100, "sugar": 10 },
 
-  "jam_bread": {
-    "bread": 2,
-    "jam": 20
-  }
+  "chocolate_milk": { "milk": 200, "chocolate": 50 },
+
+  "ice_cream": { "ice_cream": 200 },
+
+  "jam_bread": { "bread": 2, "jam": 20 }
 }
