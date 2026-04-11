@@ -4,10 +4,10 @@ from kitchen.schemas.response_schema import APIResponse
 from kitchen.utils.exceptions import NoDataAvailableError, DataLoadError
 from kitchen.utils.responses import success_response
 
-router = APIRouter()
+router = APIRouter(prefix="/predict", tags=["Prediction"])
 
 
-@router.get("/predict/runout", response_model=APIResponse)
+@router.get("/runout", response_model=APIResponse)
 async def get_runout_predictions():
     try:
         result = predict_runout()

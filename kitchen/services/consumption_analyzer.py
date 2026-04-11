@@ -9,6 +9,7 @@ class ConsumptionAnalyzer:
         self.consumption_log = self.load_consumption_log()
         self.dishes = load_dishes()
 
+    # ------------------ LOAD LOG ------------------
     def load_consumption_log(self):
         try:
             with open("data/consumption_log.json") as f:
@@ -16,14 +17,16 @@ class ConsumptionAnalyzer:
         except FileNotFoundError:
             return []
 
+    # ------------------ INGREDIENT USAGE ------------------
     def get_ingredient_usage(self):
         """
-        Convert dish logs → ingredient usage list
+        Convert dish logs → ingredient usage list (FIXED)
         """
         usage_data = []
 
         for log in self.consumption_log:
             dish_name = log.get("dish")
+            servings = log.get("servings", 1)   # ✅ FIX
             date = log.get("date")
 
             if dish_name not in self.dishes:
@@ -34,12 +37,13 @@ class ConsumptionAnalyzer:
             for ingredient, qty in ingredients.items():
                 usage_data.append({
                     "ingredient": ingredient,
-                    "usage": qty,
+                    "usage": qty * servings,   # ✅ FIX (VERY IMPORTANT)
                     "date": date
                 })
 
         return usage_data
 
+    # ------------------ DAILY USAGE ------------------
     def get_daily_usage(self):
         """
         Calculate average daily usage for each ingredient
@@ -54,8 +58,12 @@ class ConsumptionAnalyzer:
             usage = entry["usage"]
             date = entry["date"]
 
-            total_usage[ingredient] += usage
-            dates.add(date)
+            # ✅ SAFETY FIX
+            if isinstance(usage, (int, float)):
+                total_usage[ingredient] += usage
+
+            if date:
+                dates.add(date)
 
         num_days = len(dates) if dates else 1
 
@@ -66,17 +74,15 @@ class ConsumptionAnalyzer:
 
         return daily_usage
 
+    # ------------------ SINGLE ITEM USAGE ------------------
     def get_usage_for_ingredient(self, ingredient_name):
-        """
-        Get daily usage for a single ingredient
-        """
         daily_usage = self.get_daily_usage()
         return daily_usage.get(ingredient_name, 0)
 
+    # ------------------ LOG DISH ------------------
     def log_dish(self, dish_name: str, servings: int, date: str) -> dict:
         """
-        Log a dish that was cooked today.
-        Adds entry to consumption_log.json
+        Log a dish + deduct inventory
         """
         if servings <= 0:
             raise ValueError("Servings must be greater than 0")
@@ -95,16 +101,21 @@ class ConsumptionAnalyzer:
         with open("data/consumption_log.json", "w") as f:
             json.dump(self.consumption_log, f, indent=2)
 
-        # Deduct ingredients from inventory
+        # ------------------ INVENTORY DEDUCTION ------------------
         inventory = load_inventory()
         ingredients = self.dishes[dish_name]
+
         deducted = []
         skipped = []
 
         for item, qty_per_serving in ingredients.items():
             required = qty_per_serving * servings
+
             if item in inventory:
-                inventory[item]["quantity"] = max(0, inventory[item]["quantity"] - required)
+                inventory[item]["quantity"] = max(
+                    0,
+                    inventory[item]["quantity"] - required
+                )
                 deducted.append({"item": item, "deducted": required})
             else:
                 skipped.append(item)
@@ -120,20 +131,16 @@ class ConsumptionAnalyzer:
             "ingredients_not_in_inventory": skipped
         }
 
+    # ------------------ MISSING DAYS ------------------
     def estimate_missing_days(self, from_date: str, to_date: str) -> dict:
-        """
-        Estimate ingredient usage for days with no logs.
-        Uses average daily usage as the estimate.
-        """
         start = datetime.strptime(from_date, "%Y-%m-%d")
         end = datetime.strptime(to_date, "%Y-%m-%d")
 
-        # Get all dates that have logs
         logged_dates = set(entry["date"] for entry in self.consumption_log)
 
-        # Find missing dates in the range
         missing_dates = []
         current = start
+
         while current <= end:
             date_str = current.strftime("%Y-%m-%d")
             if date_str not in logged_dates:
@@ -147,13 +154,13 @@ class ConsumptionAnalyzer:
                 "message": "No missing days found"
             }
 
-        # Get average daily usage
         daily_usage = self.get_daily_usage()
 
-        # Multiply by number of missing days
         estimated_usage = {}
         for ingredient, usage_per_day in daily_usage.items():
-            estimated_usage[ingredient] = round(usage_per_day * len(missing_dates), 2)
+            estimated_usage[ingredient] = round(
+                usage_per_day * len(missing_dates), 2
+            )
 
         return {
             "missing_days": len(missing_dates),
