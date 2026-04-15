@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — Kitchen Stock AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .alert-row { display: flex; flex-direction: column; gap: 8px; }
+    .alert-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--border);
+      font-size: 13px;
+    }
+    .alert-item--critical { border-left-color: var(--red); }
+    .alert-item--warning  { border-left-color: var(--yellow); }
+    .alert-item--expiry   { border-left-color: var(--amber); }
+    .alert-item__name { font-weight: 500; flex: 1; font-family: var(--font-mono); font-size: 12px; }
+    .alert-item__meta { font-size: 11px; color: var(--text-secondary); }
+
+    .pred-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .pred-item:last-child { border-bottom: none; }
+    .pred-item__name { font-family: var(--font-mono); font-size: 12px; flex: 1; }
+    .pred-item__days { font-family: var(--font-display); font-size: 18px; font-weight: 700; }
+    .pred-item__days span { font-size: 11px; color: var(--text-muted); font-family: var(--font-body); font-weight: 400; }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    .quick-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      transition: var(--transition);
+      color: var(--text-primary);
+    }
+    .quick-btn:hover {
+      border-color: var(--border-glow);
+      background: var(--amber-subtle);
+      transform: translateY(-2px);
+    }
+    .quick-btn__icon {
+      font-size: 22px;
+      width: 44px; height: 44px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .quick-btn__label { font-weight: 500; font-size: 13px; }
+    .quick-btn__sub { font-size: 11px; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-mark">
+        <div class="logo-icon">🍳</div>
+        <div class="logo-text">KitchenStock<span>AI v1.0</span></div>
+      </div>
+    </div>
+    <nav class="sidebar__nav">
+      <div class="nav-section-label">Core</div>
+      <a href="index.html" class="nav-item active">
+        <span class="nav-item__icon">⬛</span> Dashboard
+      </a>
+      <a href="inventory.html" class="nav-item">
+        <span class="nav-item__icon">📦</span> Inventory
+      </a>
+      <a href="dishes.html" class="nav-item">
+        <span class="nav-item__icon">🍽️</span> Dishes
+      </a>
+      <div class="nav-section-label">Intelligence</div>
+      <a href="predictions.html" class="nav-item">
+        <span class="nav-item__icon">🔮</span> Predictions
+      </a>
+      <a href="shopping.html" class="nav-item">
+        <span class="nav-item__icon">🛒</span> Shopping List
+      </a>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="conn-status">
+        <span class="conn-dot" id="connection-dot"></span>
+        <span id="connection-label">Checking…</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar__title">Dashboard</div>
+    <div class="topbar__right">
+      <span class="topbar__date" id="today-date"></span>
+      <button class="btn btn--secondary btn--sm" onclick="loadDashboard()">↻ Refresh</button>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main-content">
+    <!-- Stats -->
+    <div class="stat-grid" id="stat-grid">
+      <div class="stat-card stat-card--info skeleton" style="height:100px"></div>
+      <div class="stat-card stat-card--critical skeleton" style="height:100px"></div>
+      <div class="stat-card stat-card--warning skeleton" style="height:100px"></div>
+      <div class="stat-card stat-card--safe skeleton" style="height:100px"></div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <a href="dishes.html" class="quick-btn">
+        <div class="quick-btn__icon">🍽️</div>
+        <div><div class="quick-btn__label">Cook a Dish</div><div class="quick-btn__sub">Check + deduct ingredients</div></div>
+      </a>
+      <a href="inventory.html" class="quick-btn">
+        <div class="quick-btn__icon">➕</div>
+        <div><div class="quick-btn__label">Add Stock</div><div class="quick-btn__sub">Update inventory items</div></div>
+      </a>
+      <a href="shopping.html" class="quick-btn">
+        <div class="quick-btn__icon">🛒</div>
+        <div><div class="quick-btn__label">Shopping List</div><div class="quick-btn__sub">What to buy today</div></div>
+      </a>
+      <a href="predictions.html" class="quick-btn">
+        <div class="quick-btn__icon">🔮</div>
+        <div><div class="quick-btn__label">Predictions</div><div class="quick-btn__sub">ML runout forecast</div></div>
+      </a>
+    </div>
+
+    <!-- Dashboard grid -->
+    <div class="dashboard-grid">
+      <!-- Predictions card -->
+      <div class="card card--glow">
+        <div class="card__title"><span class="card__title-icon">🔮</span> Runout Predictions</div>
+        <div id="pred-list"><div class="skeleton" style="height:200px; border-radius:8px"></div></div>
+      </div>
+
+      <!-- Alerts card -->
+      <div class="card">
+        <div class="card__title"><span class="card__title-icon">🔔</span> Alerts</div>
+        <div class="alert-row" id="alert-list"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import API from './js/api.js';
+  import { checkConnection, animateCount, statusBadge, emptyState } from './js/utils.js';
+
+  // Date
+  document.getElementById('today-date').textContent =
+    new Date().toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+
+  window.loadDashboard = async function() {
+    checkConnection(API);
+    await Promise.all([loadStats(), loadDashboardData()]);
+  };
+
+  async function loadStats() {
+    try {
+      const inv = await API.getInventory();
+      const items = Object.entries(inv.data || {});
+      const total = items.length;
+      const outOfStock = items.filter(([,d]) => d.quantity === 0).length;
+      const low = items.filter(([,d]) => d.quantity > 0 && d.quantity < 200).length;
+      const good = total - outOfStock - low;
+
+      document.getElementById('stat-grid').innerHTML = `
+        <div class="stat-card stat-card--info">
+          <div class="stat-card__label">Total Items</div>
+          <div class="stat-card__value" id="cnt-total">${total}</div>
+          <div class="stat-card__sub">ingredients tracked</div>
+        </div>
+        <div class="stat-card stat-card--critical">
+          <div class="stat-card__label">Out of Stock</div>
+          <div class="stat-card__value" id="cnt-out">${outOfStock}</div>
+          <div class="stat-card__sub">need immediate restock</div>
+        </div>
+        <div class="stat-card stat-card--warning">
+          <div class="stat-card__label">Low Stock</div>
+          <div class="stat-card__value" id="cnt-low">${low}</div>
+          <div class="stat-card__sub">below threshold</div>
+        </div>
+        <div class="stat-card stat-card--safe">
+          <div class="stat-card__label">Well Stocked</div>
+          <div class="stat-card__value" id="cnt-good">${good}</div>
+          <div class="stat-card__sub">no action needed</div>
+        </div>
+      `;
+    } catch(e) {
+      document.getElementById('stat-grid').innerHTML = `<div class="alert-banner alert-banner--critical" style="grid-column:1/-1">⚠ ${e.message}</div>`;
+    }
+  }
+
+  async function loadDashboardData() {
+    try {
+      const data = await API.dashboard();
+      renderPredictions(data.predictions?.predictions || []);
+      renderAlerts(data.alerts || {});
+    } catch(e) {
+      document.getElementById('pred-list').innerHTML = `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+    }
+  }
+
+  function renderPredictions(preds) {
+    const el = document.getElementById('pred-list');
+    if (!preds.length) { emptyState(el, 'No prediction data yet. Log some dishes first.'); return; }
+
+    const top = preds.slice(0, 8);
+    el.innerHTML = top.map(p => `
+      <div class="pred-item">
+        <div class="pred-item__name">${p.item}</div>
+        ${statusBadge(p.status)}
+        <div class="pred-item__days" style="color: ${p.status==='critical'?'var(--red)':p.status==='warning'?'var(--yellow)':'var(--green)'}">
+          ${p.days_left ?? p.ml_days_until_runout ?? '—'}
+          <span>days</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function renderAlerts(alerts) {
+    const el = document.getElementById('alert-list');
+    const rows = [];
+
+    (alerts.out_of_stock || []).forEach(item => {
+      rows.push(`<div class="alert-item alert-item--critical">
+        <span>🔴</span><span class="alert-item__name">${item}</span>
+        <span class="alert-item__meta">Out of stock</span>
+      </div>`);
+    });
+    (alerts.low_stock || []).forEach(item => {
+      rows.push(`<div class="alert-item alert-item--warning">
+        <span>🟡</span><span class="alert-item__name">${item}</span>
+        <span class="alert-item__meta">Low stock</span>
+      </div>`);
+    });
+    (alerts.expiring_soon || []).forEach(item => {
+      rows.push(`<div class="alert-item alert-item--expiry">
+        <span>⏰</span><span class="alert-item__name">${item.item}</span>
+        <span class="alert-item__meta">Expires in ${item.days_left}d</span>
+      </div>`);
+    });
+
+    if (!rows.length) {
+      el.innerHTML = `<div class="alert-banner alert-banner--success">✓ All items in good condition</div>`;
+    } else {
+      el.innerHTML = rows.join('');
+    }
+  }
+
+  loadDashboard();
+</script>
+</body>
+</html>

@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dishes — Kitchen Stock AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .dish-input-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 28px;
+    }
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-elevated);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 24px;
+      width: fit-content;
+    }
+    .tab-btn {
+      padding: 7px 18px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+    .tab-btn.active {
+      background: var(--bg-card);
+      color: var(--amber);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .ingredient-check {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--border);
+      margin-bottom: 8px;
+    }
+    .ingredient-check--ok    { border-left-color: var(--green); }
+    .ingredient-check--short { border-left-color: var(--red); }
+    .ingredient-check__name { font-family: var(--font-mono); font-size: 12px; flex: 1; }
+    .ingredient-check__qty  { font-size: 12px; color: var(--text-secondary); }
+    .ingredient-check__tick { font-size: 16px; }
+
+    .cook-result {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .cook-result__heading {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      color: var(--green);
+    }
+    .cook-result__item {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .cook-result__item:last-child { border-bottom: none; }
+    .cook-result__name { font-family: var(--font-mono); font-size: 12px; }
+    .cook-result__val  { color: var(--amber); font-family: var(--font-mono); font-size: 12px; }
+
+    .recipe-card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      margin-bottom: 12px;
+    }
+    .recipe-card__title { font-weight: 600; font-family: var(--font-display); font-size: 14px; margin-bottom: 8px; }
+    .recipe-card__meta  { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); margin-bottom: 10px; }
+    .recipe-card__missing { display: flex; flex-wrap: wrap; gap: 6px; }
+    .missing-tag {
+      background: var(--red-glow);
+      color: var(--red);
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 99px;
+      font-family: var(--font-mono);
+    }
+
+    .log-form { display: flex; flex-direction: column; gap: 16px; }
+    .can-cook-banner {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .can-cook-banner--yes {
+      background: var(--green-glow);
+      border: 1px solid rgba(57,217,138,0.25);
+      color: var(--green);
+    }
+    .can-cook-banner--no {
+      background: var(--red-glow);
+      border: 1px solid rgba(255,68,68,0.25);
+      color: var(--red);
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-mark">
+        <div class="logo-icon">🍳</div>
+        <div class="logo-text">KitchenStock<span>AI v1.0</span></div>
+      </div>
+    </div>
+    <nav class="sidebar__nav">
+      <div class="nav-section-label">Core</div>
+      <a href="index.html" class="nav-item"><span class="nav-item__icon">⬛</span> Dashboard</a>
+      <a href="inventory.html" class="nav-item"><span class="nav-item__icon">📦</span> Inventory</a>
+      <a href="dishes.html" class="nav-item active"><span class="nav-item__icon">🍽️</span> Dishes</a>
+      <div class="nav-section-label">Intelligence</div>
+      <a href="predictions.html" class="nav-item"><span class="nav-item__icon">🔮</span> Predictions</a>
+      <a href="shopping.html" class="nav-item"><span class="nav-item__icon">🛒</span> Shopping List</a>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="conn-status">
+        <span class="conn-dot" id="connection-dot"></span>
+        <span id="connection-label">Checking…</span>
+      </div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar__title">Dishes</div>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__title">Dish Manager</div>
+      <div class="page-header__sub">Check ingredients, cook dishes, and get recipe suggestions</div>
+    </div>
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('check')">🔍 Check Dish</button>
+      <button class="tab-btn" onclick="switchTab('cook')">🍳 Cook Dish</button>
+      <button class="tab-btn" onclick="switchTab('recipes')">📋 Suggest Recipes</button>
+      <button class="tab-btn" onclick="switchTab('log')">📝 Log Dish</button>
+    </div>
+
+    <!-- Tab: Check -->
+    <div class="tab-panel active" id="tab-check">
+      <div class="card">
+        <div class="card__title"><span class="card__title-icon">🔍</span> Check Ingredients</div>
+        <div class="dish-input-row">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Dish Name</label>
+            <input class="form-input" id="check-dish" placeholder="e.g. idli, biryani, dosa" />
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Servings</label>
+            <input class="form-input" id="check-servings" type="number" value="2" min="1" style="width:90px" />
+          </div>
+          <button class="btn btn--primary" id="check-btn" onclick="checkDish()">Check</button>
+        </div>
+        <div id="check-result"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Cook -->
+    <div class="tab-panel" id="tab-cook">
+      <div class="card">
+        <div class="card__title"><span class="card__title-icon">🍳</span> Cook a Dish</div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px">
+          This will deduct ingredients from inventory automatically.
+        </p>
+        <div class="dish-input-row">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Dish Name</label>
+            <input class="form-input" id="cook-dish" placeholder="e.g. idli, biryani, dosa" />
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Servings</label>
+            <input class="form-input" id="cook-servings" type="number" value="2" min="1" style="width:90px" />
+          </div>
+          <button class="btn btn--primary" id="cook-btn" onclick="cookDish()" style="background:var(--green);color:#000">Cook!</button>
+        </div>
+        <div id="cook-result"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Recipes -->
+    <div class="tab-panel" id="tab-recipes">
+      <div class="card">
+        <div class="card__title"><span class="card__title-icon">📋</span> Recipe Suggestions</div>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+          <div>
+            <label class="form-label">Max Missing Ingredients</label>
+            <input class="form-input" id="max-missing" type="number" value="2" min="0" max="10" style="width:100px" />
+          </div>
+          <button class="btn btn--primary" id="recipe-btn" onclick="suggestRecipes()" style="margin-top:18px">Get Suggestions</button>
+        </div>
+        <div id="recipe-result"></div>
+      </div>
+    </div>
+
+    <!-- Tab: Log -->
+    <div class="tab-panel" id="tab-log">
+      <div class="card">
+        <div class="card__title"><span class="card__title-icon">📝</span> Log Dish (Consumption)</div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px">
+          Log what you cooked today. This feeds into ML predictions and auto-estimation.
+        </p>
+        <div class="log-form">
+          <div class="form-row">
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Dish Name</label>
+              <input class="form-input" id="log-dish" placeholder="e.g. idli" />
+            </div>
+            <div class="form-group" style="margin:0">
+              <label class="form-label">Servings</label>
+              <input class="form-input" id="log-servings" type="number" value="2" min="1" />
+            </div>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Date</label>
+            <input class="form-input" id="log-date" type="date" />
+          </div>
+          <button class="btn btn--primary" id="log-btn" onclick="logDish()">Log Dish</button>
+        </div>
+        <div id="log-result" style="margin-top:16px"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import API from './js/api.js';
+  import { checkConnection, showToast, setLoading, todayISO } from './js/utils.js';
+
+  checkConnection(API);
+  document.getElementById('log-date').value = todayISO();
+
+  window.switchTab = function(tab) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    event.target.classList.add('active');
+  };
+
+  window.checkDish = async function() {
+    const dish = document.getElementById('check-dish').value.trim();
+    const servings = parseInt(document.getElementById('check-servings').value);
+    if (!dish) { showToast('Enter a dish name', 'warning'); return; }
+    const btn = document.getElementById('check-btn');
+    setLoading(btn, true);
+    try {
+      const res = await API.checkDish(dish, servings);
+      const d = res.data;
+      const canCook = d.can_cook;
+      document.getElementById('check-result').innerHTML = `
+        <div class="can-cook-banner can-cook-banner--${canCook ? 'yes' : 'no'}">
+          <span style="font-size:22px">${canCook ? '✅' : '❌'}</span>
+          <span>${canCook ? `You can cook <strong>${d.dish}</strong> for ${d.servings} servings!` : `Not enough ingredients to cook <strong>${d.dish}</strong>`}</span>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          ${(d.ingredients || []).map(i => `
+            <div class="ingredient-check ingredient-check--${i.enough ? 'ok' : 'short'}">
+              <span class="ingredient-check__tick">${i.enough ? '✓' : '✗'}</span>
+              <span class="ingredient-check__name">${i.item}</span>
+              <span class="ingredient-check__qty">Need: ${i.required} · Have: ${i.available}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } catch(e) {
+      document.getElementById('check-result').innerHTML = `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+    } finally {
+      setLoading(btn, false);
+    }
+  };
+
+  window.cookDish = async function() {
+    const dish = document.getElementById('cook-dish').value.trim();
+    const servings = parseInt(document.getElementById('cook-servings').value);
+    if (!dish) { showToast('Enter a dish name', 'warning'); return; }
+    if (!confirm(`Cook "${dish}" for ${servings} servings? This will deduct from inventory.`)) return;
+    const btn = document.getElementById('cook-btn');
+    setLoading(btn, true);
+    try {
+      const res = await API.cookDish(dish, servings);
+      const d = res.data;
+      showToast(`${dish} cooked! Inventory updated.`);
+      document.getElementById('cook-result').innerHTML = `
+        <div class="cook-result">
+          <div class="cook-result__heading">✓ Cooked ${d.dish_name} × ${d.servings} servings</div>
+          ${(d.updated_inventory || []).map(i => `
+            <div class="cook-result__item">
+              <span class="cook-result__name">${i.item}</span>
+              <span class="cook-result__val">${i.quantity} ${i.unit} remaining</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    } catch(e) {
+      document.getElementById('cook-result').innerHTML = `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+    } finally {
+      setLoading(btn, false);
+    }
+  };
+
+  window.suggestRecipes = async function() {
+    const maxMissing = parseInt(document.getElementById('max-missing').value);
+    const btn = document.getElementById('recipe-btn');
+    setLoading(btn, true);
+    try {
+      const res = await API.suggestRecipes(maxMissing);
+      const { available = [], partial = [] } = res.data;
+      let html = '';
+      if (available.length) {
+        html += `<p style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:10px">✓ Can cook now (${available.length})</p>`;
+        html += available.map(r => `
+          <div class="recipe-card" style="border-color:rgba(57,217,138,0.2)">
+            <div class="recipe-card__title">${r.dish}</div>
+            <div class="recipe-card__meta">${r.total_ingredients} ingredients · ${r.coverage_percent}% coverage</div>
+          </div>
+        `).join('');
+      }
+      if (partial.length) {
+        html += `<p style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--yellow);margin:14px 0 10px">~ Partial match (${partial.length})</p>`;
+        html += partial.map(r => `
+          <div class="recipe-card">
+            <div class="recipe-card__title">${r.dish}</div>
+            <div class="recipe-card__meta">${r.coverage_percent}% coverage · ${r.missing_items.length} missing</div>
+            <div class="recipe-card__missing">${r.missing_items.map(m => `<span class="missing-tag">${m}</span>`).join('')}</div>
+          </div>
+        `).join('');
+      }
+      if (!html) html = `<div class="empty-state"><div class="empty-state__icon">📋</div><p>No matching recipes found. Stock up your inventory!</p></div>`;
+      document.getElementById('recipe-result').innerHTML = html;
+    } catch(e) {
+      document.getElementById('recipe-result').innerHTML = `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+    } finally {
+      setLoading(btn, false);
+    }
+  };
+
+  window.logDish = async function() {
+    const dish = document.getElementById('log-dish').value.trim();
+    const servings = parseInt(document.getElementById('log-servings').value);
+    const date = document.getElementById('log-date').value;
+    if (!dish || !date) { showToast('Fill in all fields', 'warning'); return; }
+    const btn = document.getElementById('log-btn');
+    setLoading(btn, true);
+    try {
+      const res = await API.logDish(dish, servings, date);
+      const d = res.data;
+      showToast(`${dish} logged successfully ✓`);
+      document.getElementById('log-result').innerHTML = `
+        <div class="alert-banner alert-banner--success">
+          ✓ Logged: <strong>${d.dish}</strong> × ${d.servings} on ${d.date}.
+          Deducted ${d.inventory_deducted.length} ingredient(s).
+        </div>
+      `;
+      document.getElementById('log-dish').value = '';
+    } catch(e) {
+      document.getElementById('log-result').innerHTML = `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+    } finally {
+      setLoading(btn, false);
+    }
+  };
+</script>
+</body>
+</html>

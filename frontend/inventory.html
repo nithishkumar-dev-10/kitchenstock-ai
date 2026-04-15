@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory — Kitchen Stock AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .inv-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding-left: 36px;
+    }
+    .search-box__icon {
+      position: absolute;
+      left: 11px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .qty-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    .qty-fill {
+      width: 60px;
+      height: 3px;
+      background: var(--bg-elevated);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .qty-fill__inner {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--amber);
+    }
+    .action-btns { display: flex; gap: 6px; }
+    .storage-tip {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-mark">
+        <div class="logo-icon">🍳</div>
+        <div class="logo-text">KitchenStock<span>AI v1.0</span></div>
+      </div>
+    </div>
+    <nav class="sidebar__nav">
+      <div class="nav-section-label">Core</div>
+      <a href="index.html" class="nav-item"><span class="nav-item__icon">⬛</span> Dashboard</a>
+      <a href="inventory.html" class="nav-item active"><span class="nav-item__icon">📦</span> Inventory</a>
+      <a href="dishes.html" class="nav-item"><span class="nav-item__icon">🍽️</span> Dishes</a>
+      <div class="nav-section-label">Intelligence</div>
+      <a href="predictions.html" class="nav-item"><span class="nav-item__icon">🔮</span> Predictions</a>
+      <a href="shopping.html" class="nav-item"><span class="nav-item__icon">🛒</span> Shopping List</a>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="conn-status">
+        <span class="conn-dot" id="connection-dot"></span>
+        <span id="connection-label">Checking…</span>
+      </div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar__title">Inventory</div>
+    <div class="topbar__right">
+      <button class="btn btn--primary" onclick="openAddModal()">＋ Add Item</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__title">Kitchen Inventory</div>
+      <div class="page-header__sub">Track, update, and manage your ingredient stock</div>
+    </div>
+
+    <div class="inv-toolbar">
+      <div class="search-box">
+        <span class="search-box__icon">🔍</span>
+        <input class="form-input" id="search-input" placeholder="Search ingredients…" oninput="filterTable()" />
+      </div>
+      <select class="form-input" id="filter-status" style="width:160px" onchange="filterTable()">
+        <option value="all">All Status</option>
+        <option value="out">Out of Stock</option>
+        <option value="low">Low Stock</option>
+        <option value="good">Well Stocked</option>
+      </select>
+      <button class="btn btn--secondary btn--sm" onclick="loadInventory()">↻ Refresh</button>
+    </div>
+
+    <div class="card" style="padding:0; overflow:hidden">
+      <table class="data-table" id="inv-table">
+        <thead>
+          <tr>
+            <th>Ingredient</th>
+            <th>Quantity</th>
+            <th>Unit</th>
+            <th>Expiry</th>
+            <th>Storage</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inv-body">
+          <tr><td colspan="7"><div class="skeleton" style="height:200px;margin:16px;border-radius:8px"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
+
+<!-- Add/Edit Modal -->
+<div class="modal-overlay" id="item-modal">
+  <div class="modal">
+    <div class="modal__header">
+      <div class="modal__title" id="modal-title">Add Ingredient</div>
+      <button class="modal__close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Ingredient Name</label>
+      <input class="form-input" id="inp-name" placeholder="e.g. onion, rice, oil" />
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Quantity</label>
+        <input class="form-input" id="inp-qty" type="number" min="0.1" step="0.1" placeholder="500" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Unit</label>
+        <select class="form-input" id="inp-unit">
+          <option value="g">g (grams)</option>
+          <option value="kg">kg</option>
+          <option value="ml">ml</option>
+          <option value="L">L (litres)</option>
+          <option value="pcs">pcs</option>
+          <option value="tbsp">tbsp</option>
+          <option value="tsp">tsp</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Expiry Date (optional)</label>
+      <input class="form-input" id="inp-expiry" type="date" />
+    </div>
+    <div class="modal__actions">
+      <button class="btn btn--secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn--primary" id="modal-submit-btn" onclick="submitItem()">Add Item</button>
+    </div>
+  </div>
+</div>
+
+<!-- Update Qty Modal -->
+<div class="modal-overlay" id="update-modal">
+  <div class="modal">
+    <div class="modal__header">
+      <div class="modal__title">Update Quantity</div>
+      <button class="modal__close" onclick="closeUpdateModal()">✕</button>
+    </div>
+    <p style="color:var(--text-secondary); font-size:13px; margin-bottom:20px">
+      Updating stock for: <strong id="update-item-name" style="color:var(--amber)"></strong>
+    </p>
+    <div class="form-group">
+      <label class="form-label">New Quantity</label>
+      <input class="form-input" id="update-qty" type="number" min="0" step="0.1" />
+    </div>
+    <div class="modal__actions">
+      <button class="btn btn--secondary" onclick="closeUpdateModal()">Cancel</button>
+      <button class="btn btn--primary" id="update-submit-btn" onclick="submitUpdate()">Update</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import API from './js/api.js';
+  import { checkConnection, showToast, setLoading, statusBadge, emptyState, formatQty } from './js/utils.js';
+
+  checkConnection(API);
+  window._allItems = [];
+  window._updateTarget = null;
+
+  window.loadInventory = async function() {
+    try {
+      const res = await API.getInventory();
+      const items = Object.entries(res.data || {});
+      window._allItems = items;
+      renderTable(items);
+    } catch(e) {
+      showToast(e.message, 'error');
+      document.getElementById('inv-body').innerHTML =
+        `<tr><td colspan="7"><div class="alert-banner alert-banner--critical" style="margin:16px">⚠ ${e.message}</div></td></tr>`;
+    }
+  };
+
+  function getStatus(qty) {
+    if (qty === 0) return 'out';
+    if (qty < 200) return 'low';
+    return 'good';
+  }
+
+  function renderTable(items) {
+    const tbody = document.getElementById('inv-body');
+    if (!items.length) {
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><div class="empty-state__icon">📦</div><p>No items in inventory. Add some ingredients!</p></div></td></tr>`;
+      return;
+    }
+    tbody.innerHTML = items.map(([name, data]) => {
+      const qty = data.quantity ?? 0;
+      const st = getStatus(qty);
+      const pct = Math.min(100, (qty / 1000) * 100);
+      const stBadge = st === 'out'
+        ? `<span class="badge badge--critical">🔴 out of stock</span>`
+        : st === 'low'
+        ? `<span class="badge badge--warning">🟡 low stock</span>`
+        : `<span class="badge badge--safe">🟢 stocked</span>`;
+
+      return `<tr data-name="${name}" data-status="${st}">
+        <td><span class="item-name">${name}</span></td>
+        <td>
+          <div class="qty-bar">
+            <span>${qty}</span>
+            <div class="qty-fill"><div class="qty-fill__inner" style="width:${pct}%;background:${st==='out'?'var(--red)':st==='low'?'var(--yellow)':'var(--amber)'}"></div></div>
+          </div>
+        </td>
+        <td><span class="unit">${data.unit || '—'}</span></td>
+        <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary)">${data.expiry_date || '—'}</td>
+        <td><span class="storage-tip">${data.storage === 'fridge' ? '❄️ fridge' : '🌡️ room temp'}</span></td>
+        <td>${stBadge}</td>
+        <td>
+          <div class="action-btns">
+            <button class="btn btn--secondary btn--sm" onclick="openUpdateModal('${name}', ${qty})">Edit</button>
+            <button class="btn btn--danger btn--sm" onclick="deleteItem('${name}')">Del</button>
+          </div>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  window.filterTable = function() {
+    const q = document.getElementById('search-input').value.toLowerCase();
+    const statusFilter = document.getElementById('filter-status').value;
+    const filtered = window._allItems.filter(([name, data]) => {
+      const st = getStatus(data.quantity ?? 0);
+      const matchSearch = name.toLowerCase().includes(q);
+      const matchStatus = statusFilter === 'all' || statusFilter === st;
+      return matchSearch && matchStatus;
+    });
+    renderTable(filtered);
+  };
+
+  window.openAddModal = function() {
+    document.getElementById('modal-title').textContent = 'Add Ingredient';
+    document.getElementById('inp-name').value = '';
+    document.getElementById('inp-qty').value = '';
+    document.getElementById('inp-expiry').value = '';
+    document.getElementById('item-modal').classList.add('open');
+  };
+
+  window.closeModal = function() {
+    document.getElementById('item-modal').classList.remove('open');
+  };
+
+  window.submitItem = async function() {
+    const name = document.getElementById('inp-name').value.trim();
+    const qty  = parseFloat(document.getElementById('inp-qty').value);
+    const unit = document.getElementById('inp-unit').value;
+    const exp  = document.getElementById('inp-expiry').value || null;
+    if (!name || isNaN(qty)) { showToast('Please fill in name and quantity', 'warning'); return; }
+    const btn = document.getElementById('modal-submit-btn');
+    setLoading(btn, true);
+    try {
+      await API.addInventory(name, qty, unit, exp);
+      showToast(`${name} added successfully ✓`);
+      closeModal();
+      loadInventory();
+    } catch(e) {
+      showToast(e.message, 'error');
+    } finally {
+      setLoading(btn, false);
+    }
+  };
+
+  window.openUpdateModal = function(name, currentQty) {
+    window._updateTarget = name;
+    document.getElementById('update-item-name').textContent = name;
+    document.getElementById('update-qty').value = currentQty;
+    document.getElementById('update-modal').classList.add('open');
+  };
+
+  window.closeUpdateModal = function() {
+    document.getElementById('update-modal').classList.remove('open');
+  };
+
+  window.submitUpdate = async function() {
+    const qty = parseFloat(document.getElementById('update-qty').value);
+    if (isNaN(qty) || qty < 0) { showToast('Enter a valid quantity', 'warning'); return; }
+    const btn = document.getElementById('update-submit-btn');
+    setLoading(btn, true);
+    try {
+      await API.updateInventory(window._updateTarget, qty);
+      showToast(`${window._updateTarget} updated ✓`);
+      closeUpdateModal();
+      loadInventory();
+    } catch(e) {
+      showToast(e.message, 'error');
+    } finally {
+      setLoading(btn, false);
+    }
+  };
+
+  window.deleteItem = async function(name) {
+    if (!confirm(`Delete "${name}" from inventory?`)) return;
+    try {
+      await API.deleteInventory(name);
+      showToast(`${name} deleted`, 'warning');
+      loadInventory();
+    } catch(e) {
+      showToast(e.message, 'error');
+    }
+  };
+
+  // Close modal on backdrop click
+  document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', e => { if (e.target === el) el.classList.remove('open'); });
+  });
+
+  loadInventory();
+</script>
+</body>
+</html>

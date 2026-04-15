@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Shopping List — Kitchen Stock AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .shopping-section { margin-bottom: 28px; }
+    .shopping-section__header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .shopping-section__title {
+      font-family: var(--font-display);
+      font-size: 14px;
+      font-weight: 600;
+    }
+    .shopping-section__count {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--bg-elevated);
+      padding: 2px 8px;
+      border-radius: 99px;
+      color: var(--text-muted);
+    }
+
+    .shop-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 18px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      border-left: 3px solid var(--border);
+      margin-bottom: 8px;
+      transition: var(--transition);
+    }
+    .shop-item:hover { background: var(--bg-hover); }
+    .shop-item--out   { border-left-color: var(--red); }
+    .shop-item--low   { border-left-color: var(--yellow); }
+    .shop-item__check {
+      width: 18px; height: 18px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .shop-item__check:hover { border-color: var(--amber); }
+    .shop-item.checked .shop-item__check { background: var(--green); border-color: var(--green); }
+    .shop-item.checked .shop-item__check::after { content: '✓'; color: #000; font-size: 11px; font-weight: 700; }
+    .shop-item.checked .shop-item__name { text-decoration: line-through; color: var(--text-muted); }
+
+    .shop-item__name { font-family: var(--font-mono); font-size: 13px; flex: 1; }
+    .shop-item__current { font-size: 11px; color: var(--text-muted); }
+    .shop-item__buy {
+      font-family: var(--font-display);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--amber);
+    }
+    .shop-item__unit { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+
+    .copy-bar {
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .copy-bar p { font-size: 13px; color: var(--text-secondary); }
+
+    .all-good {
+      text-align: center;
+      padding: 80px 24px;
+    }
+    .all-good__emoji { font-size: 56px; margin-bottom: 16px; }
+    .all-good__title {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--green);
+      margin-bottom: 8px;
+    }
+    .all-good__sub { color: var(--text-secondary); font-size: 14px; }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-mark">
+        <div class="logo-icon">🍳</div>
+        <div class="logo-text">KitchenStock<span>AI v1.0</span></div>
+      </div>
+    </div>
+    <nav class="sidebar__nav">
+      <div class="nav-section-label">Core</div>
+      <a href="index.html" class="nav-item"><span class="nav-item__icon">⬛</span> Dashboard</a>
+      <a href="inventory.html" class="nav-item"><span class="nav-item__icon">📦</span> Inventory</a>
+      <a href="dishes.html" class="nav-item"><span class="nav-item__icon">🍽️</span> Dishes</a>
+      <div class="nav-section-label">Intelligence</div>
+      <a href="predictions.html" class="nav-item"><span class="nav-item__icon">🔮</span> Predictions</a>
+      <a href="shopping.html" class="nav-item active"><span class="nav-item__icon">🛒</span> Shopping List</a>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="conn-status">
+        <span class="conn-dot" id="connection-dot"></span>
+        <span id="connection-label">Checking…</span>
+      </div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar__title">Shopping List</div>
+    <div class="topbar__right">
+      <button class="btn btn--secondary btn--sm" onclick="loadShopping()">↻ Refresh</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__title">Shopping List</div>
+      <div class="page-header__sub">Generated from current inventory alerts</div>
+    </div>
+
+    <div id="shopping-content">
+      <div class="skeleton" style="height:200px;border-radius:12px"></div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import API from './js/api.js';
+  import { checkConnection, showToast } from './js/utils.js';
+
+  checkConnection(API);
+
+  window.loadShopping = async function() {
+    try {
+      const res = await API.getShopping();
+      const { out_of_stock = [], low_stock = [] } = res.data;
+      renderShopping(out_of_stock, low_stock);
+    } catch(e) {
+      if (e.message.toLowerCase().includes('well stocked') || e.message.toLowerCase().includes('no shopping')) {
+        document.getElementById('shopping-content').innerHTML = `
+          <div class="all-good">
+            <div class="all-good__emoji">✅</div>
+            <div class="all-good__title">You're all stocked!</div>
+            <div class="all-good__sub">No shopping needed right now. Kitchen is fully stocked.</div>
+          </div>
+        `;
+      } else {
+        document.getElementById('shopping-content').innerHTML =
+          `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+      }
+    }
+  };
+
+  function renderShopping(outItems, lowItems) {
+    const total = outItems.length + lowItems.length;
+    if (!total) {
+      document.getElementById('shopping-content').innerHTML = `
+        <div class="all-good">
+          <div class="all-good__emoji">✅</div>
+          <div class="all-good__title">You're all stocked!</div>
+          <div class="all-good__sub">No shopping needed right now.</div>
+        </div>
+      `;
+      return;
+    }
+
+    let html = '';
+
+    if (outItems.length) {
+      html += `<div class="shopping-section">
+        <div class="shopping-section__header">
+          <span style="font-size:18px">🔴</span>
+          <span class="shopping-section__title">Out of Stock</span>
+          <span class="shopping-section__count">${outItems.length} items</span>
+        </div>
+        ${outItems.map(item => shopItemHTML(item, 'out')).join('')}
+      </div>`;
+    }
+
+    if (lowItems.length) {
+      html += `<div class="shopping-section">
+        <div class="shopping-section__header">
+          <span style="font-size:18px">🟡</span>
+          <span class="shopping-section__title">Low Stock</span>
+          <span class="shopping-section__count">${lowItems.length} items</span>
+        </div>
+        ${lowItems.map(item => shopItemHTML(item, 'low')).join('')}
+      </div>`;
+    }
+
+    html += `
+      <div class="copy-bar">
+        <p>📋 ${total} item${total > 1 ? 's' : ''} to buy · Tap items to mark as purchased</p>
+        <button class="btn btn--secondary btn--sm" onclick="copyList()">📋 Copy List</button>
+      </div>
+    `;
+
+    document.getElementById('shopping-content').innerHTML = html;
+
+    // Add checkbox toggle
+    document.querySelectorAll('.shop-item__check').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.closest('.shop-item').classList.toggle('checked');
+      });
+    });
+  }
+
+  function shopItemHTML(item, type) {
+    return `<div class="shop-item shop-item--${type}" data-item="${item.item}" data-buy="${item.suggested_buy}" data-unit="${item.unit}">
+      <div class="shop-item__check"></div>
+      <span class="shop-item__name">${item.item}</span>
+      <span class="shop-item__current">Have: ${item.current_quantity} ${item.unit}</span>
+      <div style="text-align:right">
+        <div class="shop-item__buy">${item.suggested_buy}</div>
+        <div class="shop-item__unit">${item.unit} to buy</div>
+      </div>
+    </div>`;
+  }
+
+  window.copyList = function() {
+    const items = [...document.querySelectorAll('.shop-item')].map(el => {
+      const name = el.dataset.item;
+      const buy  = el.dataset.buy;
+      const unit = el.dataset.unit;
+      return `• ${name}: ${buy} ${unit}`;
+    });
+    const text = `🛒 Shopping List\n${new Date().toLocaleDateString()}\n\n${items.join('\n')}`;
+    navigator.clipboard.writeText(text).then(() => showToast('List copied to clipboard!'));
+  };
+
+  loadShopping();
+</script>
+</body>
+</html>
