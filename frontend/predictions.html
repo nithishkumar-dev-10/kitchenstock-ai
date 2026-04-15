@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Predictions — Kitchen Stock AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .pred-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 20px;
+    }
+    .pred-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .pred-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--bar-color, var(--amber));
+    }
+    .pred-card--critical { --bar-color: var(--red); }
+    .pred-card--warning  { --bar-color: var(--yellow); }
+    .pred-card--safe     { --bar-color: var(--green); }
+    .pred-card:hover     { transform: translateY(-3px); box-shadow: var(--shadow-card); }
+
+    .pred-card__header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .pred-card__name { font-family: var(--font-mono); font-size: 13px; font-weight: 500; }
+    .pred-card__days {
+      font-family: var(--font-display);
+      font-size: 32px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .pred-card__days-label { font-size: 11px; color: var(--text-muted); }
+    .pred-card__meta { margin-top: 12px; font-size: 11px; color: var(--text-secondary); font-family: var(--font-mono); }
+
+    .mode-toggle {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-elevated);
+      padding: 4px;
+      border-radius: var(--radius-sm);
+    }
+    .mode-btn {
+      padding: 6px 14px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: var(--transition);
+    }
+    .mode-btn.active {
+      background: var(--bg-card);
+      color: var(--amber);
+    }
+    .urgency-section { margin-bottom: 24px; }
+    .urgency-section h3 {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+    .urgency-section--high h3 { color: var(--red); }
+    .urgency-section--medium h3 { color: var(--yellow); }
+    .urgency-section--low h3 { color: var(--green); }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-mark">
+        <div class="logo-icon">🍳</div>
+        <div class="logo-text">KitchenStock<span>AI v1.0</span></div>
+      </div>
+    </div>
+    <nav class="sidebar__nav">
+      <div class="nav-section-label">Core</div>
+      <a href="index.html" class="nav-item"><span class="nav-item__icon">⬛</span> Dashboard</a>
+      <a href="inventory.html" class="nav-item"><span class="nav-item__icon">📦</span> Inventory</a>
+      <a href="dishes.html" class="nav-item"><span class="nav-item__icon">🍽️</span> Dishes</a>
+      <div class="nav-section-label">Intelligence</div>
+      <a href="predictions.html" class="nav-item active"><span class="nav-item__icon">🔮</span> Predictions</a>
+      <a href="shopping.html" class="nav-item"><span class="nav-item__icon">🛒</span> Shopping List</a>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="conn-status">
+        <span class="conn-dot" id="connection-dot"></span>
+        <span id="connection-label">Checking…</span>
+      </div>
+    </div>
+  </aside>
+
+  <header class="topbar">
+    <div class="topbar__title">Predictions</div>
+    <div class="topbar__right">
+      <div class="mode-toggle">
+        <button class="mode-btn active" id="btn-rule" onclick="switchMode('rule')">📐 Rule-Based</button>
+        <button class="mode-btn" id="btn-ml" onclick="switchMode('ml')">🤖 ML Model</button>
+      </div>
+      <button class="btn btn--secondary btn--sm" onclick="loadPredictions()">↻ Refresh</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__title">Runout Predictions</div>
+      <div class="page-header__sub">Forecasted days until each ingredient runs out based on consumption patterns</div>
+    </div>
+
+    <div id="pred-summary" class="stat-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px"></div>
+    <div id="pred-content">
+      <div class="pred-grid">
+        ${Array(6).fill('<div class="pred-card skeleton" style="height:140px"></div>').join('')}
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import API from './js/api.js';
+  import { checkConnection, showToast, statusBadge, emptyState } from './js/utils.js';
+
+  checkConnection(API);
+  window._mode = 'rule';
+
+  window.switchMode = function(mode) {
+    window._mode = mode;
+    document.getElementById('btn-rule').classList.toggle('active', mode === 'rule');
+    document.getElementById('btn-ml').classList.toggle('active', mode === 'ml');
+    loadPredictions();
+  };
+
+  window.loadPredictions = async function() {
+    document.getElementById('pred-content').innerHTML = `<div class="pred-grid">${Array(6).fill('<div class="pred-card skeleton" style="height:140px"></div>').join('')}</div>`;
+    try {
+      const res = window._mode === 'ml'
+        ? await API.getMLPredictions()
+        : await API.getPredictions();
+      const preds = res.data?.predictions || [];
+      renderSummary(preds);
+      renderPredCards(preds);
+    } catch(e) {
+      document.getElementById('pred-content').innerHTML =
+        `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+      showToast(e.message, 'error');
+    }
+  };
+
+  function renderSummary(preds) {
+    const critical = preds.filter(p => p.status === 'critical').length;
+    const warning  = preds.filter(p => p.status === 'warning').length;
+    const safe     = preds.filter(p => p.status === 'safe').length;
+    document.getElementById('pred-summary').innerHTML = `
+      <div class="stat-card stat-card--critical">
+        <div class="stat-card__label">Critical (≤3 days)</div>
+        <div class="stat-card__value">${critical}</div>
+        <div class="stat-card__sub">buy immediately</div>
+      </div>
+      <div class="stat-card stat-card--warning">
+        <div class="stat-card__label">Warning (≤7 days)</div>
+        <div class="stat-card__value">${warning}</div>
+        <div class="stat-card__sub">buy this week</div>
+      </div>
+      <div class="stat-card stat-card--safe">
+        <div class="stat-card__label">Safe</div>
+        <div class="stat-card__value">${safe}</div>
+        <div class="stat-card__sub">well stocked</div>
+      </div>
+    `;
+  }
+
+  function renderPredCards(preds) {
+    if (!preds.length) {
+      document.getElementById('pred-content').innerHTML =
+        `<div class="empty-state"><div class="empty-state__icon">🔮</div><p>No prediction data. Log dishes to build a usage history.</p></div>`;
+      return;
+    }
+
+    const byStatus = { critical: [], warning: [], safe: [], unknown: [] };
+    preds.forEach(p => (byStatus[p.status] || byStatus.unknown).push(p));
+
+    const sections = [
+      { key: 'critical', label: '🔴 Critical — Buy Immediately', cls: 'high' },
+      { key: 'warning',  label: '🟡 Warning — Buy This Week',    cls: 'medium' },
+      { key: 'safe',     label: '🟢 Well Stocked',               cls: 'low' },
+      { key: 'unknown',  label: '⚪ Unknown',                     cls: 'low' },
+    ];
+
+    let html = '';
+    sections.forEach(({ key, label, cls }) => {
+      const items = byStatus[key];
+      if (!items.length) return;
+      html += `<div class="urgency-section urgency-section--${cls}">
+        <h3>${label} (${items.length})</h3>
+        <div class="pred-grid">
+          ${items.map(p => renderCard(p)).join('')}
+        </div>
+      </div>`;
+    });
+
+    document.getElementById('pred-content').innerHTML = html;
+  }
+
+  function renderCard(p) {
+    const days = p.days_left ?? p.ml_days_until_runout;
+    const daysDisplay = days != null ? days : '—';
+    const colorMap = { critical: 'var(--red)', warning: 'var(--yellow)', safe: 'var(--green)', unknown: 'var(--text-muted)' };
+    const color = colorMap[p.status] || 'var(--text-muted)';
+
+    return `<div class="pred-card pred-card--${p.status}">
+      <div class="pred-card__header">
+        <span class="pred-card__name">${p.item}</span>
+        ${statusBadge(p.status)}
+      </div>
+      <div class="pred-card__days" style="color:${color}">${daysDisplay}</div>
+      <div class="pred-card__days-label">days until runout</div>
+      <div class="progress" style="margin-top:12px">
+        <div class="progress__fill progress__fill--${p.status}" style="width:${Math.min(100, ((days||0)/30)*100)}%"></div>
+      </div>
+      <div class="pred-card__meta">
+        ${p.daily_usage != null ? `Avg usage: ${p.daily_usage}${p.unit || ''}/day` : ''}
+        ${p.action ? ` · ${p.action}` : ''}
+        ${p.ml_days_until_runout != null && window._mode === 'ml' ? `· ML: ${p.ml_days_until_runout}d` : ''}
+      </div>
+    </div>`;
+  }
+
+  loadPredictions();
+</script>
+</body>
+</html>
