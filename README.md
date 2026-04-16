@@ -1,18 +1,20 @@
-# KitchenStock AI
+## ⚠️
 
-KitchenStock AI is an intelligent kitchen inventory and grocery prediction system that tracks ingredient usage and predicts when items will run out.
+If you're here to copy ideas or lift code…
 
-## Features
+don’t.
 
-- Track available kitchen ingredients
-- Predict grocery needs using consumption patterns
-- Smart alerts for low stock items
-- Backend APIs built with FastAPI
+Build your own.
 
-## Tech Stack
+This wasn’t made by watching tutorials or cloning repos.
+It was built by thinking, failing, fixing, and repeating.
 
-Python  
-Machine Learning  
-FastAPI  
-HTML / CSS
+You can read it.
+You can learn from it.
 
+But copying?
+
+That just shows you can’t build.
+
+Stay original.
+Or stay average.
