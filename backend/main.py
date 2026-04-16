@@ -5,6 +5,9 @@ from kitchen.core.config import settings
 from kitchen.utils.exceptions import KitchenBaseError, NoDataAvailableError
 from kitchen.utils.responses import error_response
 
+from fastapi.middleware.cors import CORSMiddleware
+
+
 # Routers
 from api.routes import (
     alerts,
@@ -36,7 +39,12 @@ app = FastAPI(
     debug=settings.debug
 )
 
-
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # ------------------ EXCEPTION HANDLERS ------------------
 
 @app.exception_handler(KitchenBaseError)
@@ -96,8 +104,8 @@ app.include_router(prediction.router, tags=["Prediction"])
 app.include_router(consumption.router, tags=["Consumption"])
 app.include_router(alerts.router, tags=["Alerts"])
 app.include_router(dishes.router, tags=["Dishes"])
-app.include_router(inventory.router, tags=["Inventory"])
-app.include_router(recipes.router, tags=["Recipes"])
+app.include_router(inventory.router,tags=["Inventory"])
+app.include_router(recipes.router,tags=["Recipes"])
 app.include_router(shopping.router, tags=["Shopping"])
 
 
