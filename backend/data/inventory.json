@@ -2,416 +2,499 @@
     "rice": {
         "quantity": 80000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "basmati_rice": {
         "quantity": 30000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "brown_rice": {
         "quantity": 15000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "wheat": {
         "quantity": 25000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "flour": {
         "quantity": 15000,
         "unit": "g",
-        "expiry_date": "2026-06-15"
+        "expiry_date": "2026-06-15",
+        "storage_type": "room_temp"
     },
     "maida": {
         "quantity": 8000,
         "unit": "g",
-        "expiry_date": "2026-06-15"
+        "expiry_date": "2026-06-15",
+        "storage_type": "room_temp"
     },
     "rava": {
         "quantity": 5000,
         "unit": "g",
-        "expiry_date": "2026-06-15"
+        "expiry_date": "2026-06-15",
+        "storage_type": "room_temp"
     },
     "toor_dal": {
         "quantity": 10000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "moong_dal": {
         "quantity": 8000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "chana_dal": {
         "quantity": 7000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "rajma": {
         "quantity": 6000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "chickpeas": {
         "quantity": 7000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "onion": {
         "quantity": 7000,
         "unit": "g",
-        "expiry_date": "2026-04-20"
+        "expiry_date": "2026-04-20",
+        "storage_type": "room_temp"
     },
     "tomato": {
         "quantity": 6000,
         "unit": "g",
-        "expiry_date": "2026-04-15"
+        "expiry_date": "2026-04-15",
+        "storage_type": "room_temp"
     },
     "potato": {
         "quantity": 8000,
         "unit": "g",
-        "expiry_date": "2026-04-25"
+        "expiry_date": "2026-04-25",
+        "storage_type": "room_temp"
     },
     "carrot": {
         "quantity": 3000,
         "unit": "g",
-        "expiry_date": "2026-04-18"
+        "expiry_date": "2026-04-18",
+        "storage_type": "fridge"
     },
     "beans": {
         "quantity": 2500,
         "unit": "g",
-        "expiry_date": "2026-04-16"
+        "expiry_date": "2026-04-16",
+        "storage_type": "fridge"
     },
     "capsicum": {
         "quantity": 2000,
         "unit": "g",
-        "expiry_date": "2026-04-16"
+        "expiry_date": "2026-04-16",
+        "storage_type": "fridge"
     },
     "cabbage": {
         "quantity": 3000,
         "unit": "g",
-        "expiry_date": "2026-04-20"
+        "expiry_date": "2026-04-20",
+        "storage_type": "fridge"
     },
     "cauliflower": {
         "quantity": 3000,
         "unit": "g",
-        "expiry_date": "2026-04-18"
+        "expiry_date": "2026-04-18",
+        "storage_type": "fridge"
     },
     "spinach": {
         "quantity": 2000,
         "unit": "g",
-        "expiry_date": "2026-04-13"
+        "expiry_date": "2026-04-13",
+        "storage_type": "fridge"
     },
     "brinjal": {
         "quantity": 2000,
         "unit": "g",
-        "expiry_date": "2026-04-17"
+        "expiry_date": "2026-04-17",
+        "storage_type": "fridge"
     },
     "chicken": {
         "quantity": 5000,
         "unit": "g",
-        "expiry_date": "2026-04-12"
+        "expiry_date": "2026-04-12",
+        "storage_type": "fridge"
     },
     "fish": {
         "quantity": 4000,
         "unit": "g",
-        "expiry_date": "2026-04-12"
+        "expiry_date": "2026-04-12",
+        "storage_type": "fridge"
     },
     "mutton": {
         "quantity": 3000,
         "unit": "g",
-        "expiry_date": "2026-04-13"
+        "expiry_date": "2026-04-13",
+        "storage_type": "fridge"
     },
     "egg": {
         "quantity": 36,
         "unit": "count",
-        "expiry_date": "2026-04-20"
+        "expiry_date": "2026-04-20",
+        "storage_type": "fridge"
     },
     "milk": {
         "quantity": 4000,
         "unit": "g",
-        "expiry_date": "2026-04-13"
+        "expiry_date": "2026-04-13",
+        "storage_type": "fridge"
     },
     "curd": {
         "quantity": 2500,
         "unit": "g",
-        "expiry_date": "2026-04-13"
+        "expiry_date": "2026-04-13",
+        "storage_type": "fridge"
     },
     "butter": {
         "quantity": 800,
         "unit": "g",
-        "expiry_date": "2026-05-15"
+        "expiry_date": "2026-05-15",
+        "storage_type": "fridge"
     },
     "cheese": {
         "quantity": 600,
         "unit": "g",
-        "expiry_date": "2026-05-15"
+        "expiry_date": "2026-05-15",
+        "storage_type": "fridge"
     },
     "paneer": {
         "quantity": 1200,
         "unit": "g",
-        "expiry_date": "2026-04-13"
+        "expiry_date": "2026-04-13",
+        "storage_type": "fridge"
     },
     "oil": {
         "quantity": 4000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "ghee": {
         "quantity": 1000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "salt": {
         "quantity": 2000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "sugar": {
         "quantity": 4000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "jaggery": {
         "quantity": 1500,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "honey": {
         "quantity": 500,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "turmeric": {
         "quantity": 400,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "chili_powder": {
         "quantity": 600,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "garam_masala": {
         "quantity": 300,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "coriander_powder": {
         "quantity": 500,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "cumin": {
         "quantity": 300,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "mustard_seeds": {
         "quantity": 200,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "black_pepper": {
         "quantity": 200,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "cardamom": {
         "quantity": 100,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "cloves": {
         "quantity": 100,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "ginger": {
         "quantity": 600,
         "unit": "g",
-        "expiry_date": "2026-04-18"
+        "expiry_date": "2026-04-18",
+        "storage_type": "fridge"
     },
     "garlic": {
         "quantity": 800,
         "unit": "g",
-        "expiry_date": "2026-04-20"
+        "expiry_date": "2026-04-20",
+        "storage_type": "fridge"
     },
     "green_chili": {
         "quantity": 300,
         "unit": "g",
-        "expiry_date": "2026-04-15"
+        "expiry_date": "2026-04-15",
+        "storage_type": "fridge"
     },
     "bread": {
         "quantity": 4,
         "unit": "count",
-        "expiry_date": "2026-04-12"
+        "expiry_date": "2026-04-12",
+        "storage_type": "room_temp"
     },
     "noodles": {
         "quantity": 1000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "pasta": {
         "quantity": 1000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "oats": {
         "quantity": 1200,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "banana": {
         "quantity": 12,
         "unit": "count",
-        "expiry_date": "2026-04-12"
+        "expiry_date": "2026-04-12",
+        "storage_type": "room_temp"
     },
     "apple": {
         "quantity": 10,
         "unit": "count",
-        "expiry_date": "2026-04-20"
+        "expiry_date": "2026-04-20",
+        "storage_type": "fridge"
     },
     "orange": {
         "quantity": 8,
         "unit": "count",
-        "expiry_date": "2026-04-20"
+        "expiry_date": "2026-04-20",
+        "storage_type": "fridge"
     },
     "mango": {
         "quantity": 6,
         "unit": "count",
-        "expiry_date": "2026-04-15"
+        "expiry_date": "2026-04-15",
+        "storage_type": "room_temp"
     },
     "lemon": {
         "quantity": 10,
         "unit": "count",
-        "expiry_date": "2026-04-25"
+        "expiry_date": "2026-04-25",
+        "storage_type": "fridge"
     },
     "corn": {
         "quantity": 2000,
         "unit": "g",
-        "expiry_date": "2026-04-18"
+        "expiry_date": "2026-04-18",
+        "storage_type": "fridge"
     },
     "peas": {
         "quantity": 1500,
         "unit": "g",
-        "expiry_date": "2026-04-18"
+        "expiry_date": "2026-04-18",
+        "storage_type": "fridge"
     },
     "soy_sauce": {
         "quantity": 300,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "fridge"
     },
     "vinegar": {
         "quantity": 300,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "tomato_ketchup": {
         "quantity": 500,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "fridge"
     },
     "chili_sauce": {
         "quantity": 400,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "fridge"
     },
     "mayonnaise": {
         "quantity": 300,
         "unit": "g",
-        "expiry_date": "2026-06-01"
+        "expiry_date": "2026-06-01",
+        "storage_type": "fridge"
     },
     "mustard_sauce": {
         "quantity": 200,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "fridge"
     },
     "peanut": {
         "quantity": 1000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "fridge"
     },
     "cashew": {
         "quantity": 800,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "fridge"
     },
     "almond": {
         "quantity": 800,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "fridge"
     },
     "coconut": {
         "quantity": 2000,
         "unit": "g",
-        "expiry_date": "2026-04-15"
+        "expiry_date": "2026-04-15",
+        "storage_type": "fridge"
     },
     "coconut_milk": {
         "quantity": 1000,
         "unit": "g",
-        "expiry_date": "2026-04-20"
+        "expiry_date": "2026-04-20",
+        "storage_type": "fridge"
     },
     "jam": {
         "quantity": 400,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "fridge"
     },
     "ice_cream": {
         "quantity": 1000,
         "unit": "g",
-        "expiry_date": "2026-05-01"
+        "expiry_date": "2026-05-01",
+        "storage_type": "fridge"
     },
     "chocolate": {
         "quantity": 500,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "fridge"
     },
     "urad_dal": {
         "quantity": 4800,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "tamarind": {
         "quantity": 500,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "curry_leaves": {
         "quantity": 200,
         "unit": "g",
-        "expiry_date": "2026-04-12"
+        "expiry_date": "2026-04-12",
+        "storage_type": "fridge"
     },
     "hing": {
         "quantity": 50,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "semolina": {
         "quantity": 3000,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "idli_rice": {
         "quantity": 9600,
         "unit": "g",
-        "expiry_date": null
+        "expiry_date": null,
+        "storage_type": "room_temp"
     },
     "cucumber": {
         "quantity": 1000,
         "unit": "g",
-        "expiry_date": "2026-04-16"
+        "expiry_date": "2026-04-16",
+        "storage_type": "fridge"
     },
     "lettuce": {
         "quantity": 500,
         "unit": "g",
-        "expiry_date": "2026-04-14"
+        "expiry_date": "2026-04-14",
+        "storage_type": "fridge"
     },
     "mushroom": {
         "quantity": 500,
         "unit": "g",
-        "expiry_date": "2026-04-14"
+        "expiry_date": "2026-04-14",
+        "storage_type": "fridge"
     }
 }
