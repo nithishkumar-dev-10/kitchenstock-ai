@@ -20,7 +20,22 @@ def _predict_storage(item: str, quantity: float, thresholds: dict) -> str:
 
 
 def get_inventory() -> dict:
-    return load_inventory()
+    inventory  = load_inventory()
+    thresholds = load_thresholds()
+
+    # FIX: Enrich any item that is missing storage_type at read time.
+    # This also backfills all existing inventory.json entries that were
+    # saved before storage_type was introduced.
+    changed = False
+    for item, data in inventory.items():
+        if not data.get("storage_type"):
+            data["storage_type"] = _predict_storage(item, float(data.get("quantity", 0)), thresholds)
+            changed = True
+
+    if changed:
+        save_inventory(inventory)   # persist so next call is instant
+
+    return inventory
 
 
 def add_stock(item: str, quantity: float, unit: str, expiry_date: str = None) -> dict:
@@ -34,6 +49,10 @@ def add_stock(item: str, quantity: float, unit: str, expiry_date: str = None) ->
         inventory[item]["quantity"] += quantity
         if expiry_date:
             inventory[item]["expiry_date"] = expiry_date
+        # FIX: always re-predict storage when quantity changes (was missing)
+        inventory[item]["storage_type"] = _predict_storage(
+            item, inventory[item]["quantity"], thresholds
+        )
         status = "updated"
     else:
         storage_type = _predict_storage(item, quantity, thresholds)
@@ -61,19 +80,23 @@ def update_stock(item: str, quantity: float) -> dict:
     if quantity <= 0:
         raise InvalidInputError("Quantity must be greater than 0")
 
-    inventory = load_inventory()
+    inventory  = load_inventory()
+    thresholds = load_thresholds()
 
     if item not in inventory:
         raise ItemNotFoundError(f"Item '{item}' not found in inventory")
 
     inventory[item]["quantity"] = quantity
+    # FIX: re-predict storage on manual quantity update too (was missing)
+    inventory[item]["storage_type"] = _predict_storage(item, quantity, thresholds)
     save_inventory(inventory)
 
     return {
-        "item":     item,
-        "quantity": quantity,
-        "unit":     inventory[item]["unit"],
-        "status":   "updated"
+        "item":         item,
+        "quantity":     quantity,
+        "unit":         inventory[item]["unit"],
+        "storage_type": inventory[item]["storage_type"],
+        "status":       "updated"
     }
 
 
