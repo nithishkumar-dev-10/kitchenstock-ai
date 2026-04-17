@@ -1,63 +1,65 @@
-STORAGE_RULES = {
-    # Fridge items
-    "chicken": "fridge",
-    "fish": "fridge",
-    "mutton": "fridge",
-    "egg": "fridge",
-    "milk": "fridge",
-    "curd": "fridge",
-    "butter": "fridge",
-    "cheese": "fridge",
-    "paneer": "fridge",
-    "spinach": "fridge",
-    "lettuce": "fridge",
-    "mushroom": "fridge",
-    "cucumber": "fridge",
-    "carrot": "fridge",
-    "beans": "fridge",
-    "capsicum": "fridge",
-    "cauliflower": "fridge",
-    "cabbage": "fridge",
-    "brinjal": "fridge",
-    "tomato": "fridge",
-    "coconut_milk": "fridge",
-    "mayonnaise": "fridge",
-    "bread": "fridge",
+from ml.ml_engine import predict_storage_type
+from kitchen.services.data_loader import load_inventory, load_thresholds
+from kitchen.utils.exceptions import ItemNotFoundError
 
-    # Room temperature items
-    "rice": "room temperature",
-    "basmati_rice": "room temperature",
-    "flour": "room temperature",
-    "toor_dal": "room temperature",
-    "moong_dal": "room temperature",
-    "oil": "room temperature",
-    "onion": "room temperature",
-    "potato": "room temperature",
-    "garlic": "room temperature",
-    "ginger": "room temperature",
-    "sugar": "room temperature",
-    "salt": "room temperature",
-    "turmeric": "room temperature",
-    "chili_powder": "room temperature",
-    "cumin": "room temperature",
-    "mustard_seeds": "room temperature",
-    "noodles": "room temperature",
-    "pasta": "room temperature",
-    "oats": "room temperature",
+
+STORAGE_MESSAGES = {
+    "fridge":    "Store in the refrigerator (0–5°C).",
+    "freezer":   "Store in the freezer (below -18°C).",
+    "room_temp": "Store at room temperature in a cool, dry place.",
 }
 
 
-def get_storage_advice(item: str) -> dict:
-    storage = STORAGE_RULES.get(item.lower(), "room temperature")
+def _build_features(item_name: str, inventory: dict, thresholds: dict) -> dict:
+    quantity  = float(inventory.get(item_name, {}).get("quantity", 0))
+    threshold = float(thresholds.get(item_name, 100))
+    ratio     = round(quantity / threshold, 3) if threshold > 0 else 1.0
+
     return {
-        "item": item,
-        "storage": storage,
-        "tip": (
-            "Keep refrigerated below 4°C" if storage == "fridge"
-            else "Store in a cool, dry place away from sunlight"
-        )
+        "used_g":                  0.0,
+        "current_stock_g":         quantity,
+        "threshold_g":             threshold,
+        "avg_daily_usage_g":       10.0,
+        "days_since_last_used":    1,
+        "usage_last_7_days_g":     0.0,
+        "stock_to_threshold_ratio": ratio,
+        "is_weekend":              0,
     }
 
 
-def get_all_storage_advice(inventory: dict) -> list:
-    return [get_storage_advice(item) for item in inventory.keys()]
+def get_storage_advice(item_name: str) -> dict:
+    inventory  = load_inventory()
+    thresholds = load_thresholds()
+
+    if item_name not in inventory:
+        raise ItemNotFoundError(f"Item '{item_name}' not found in inventory")
+
+    features     = _build_features(item_name, inventory, thresholds)
+    storage_type = predict_storage_type(features)
+
+    return {
+        "item":         item_name,
+        "storage_type": storage_type,
+        "advice":       STORAGE_MESSAGES.get(storage_type, "Store safely.")
+    }
+
+
+def get_all_storage_advice(inventory: dict) -> dict:
+    thresholds = load_thresholds()
+    result     = {}
+
+    for item_name in inventory:
+        try:
+            features     = _build_features(item_name, inventory, thresholds)
+            storage_type = predict_storage_type(features)
+            result[item_name] = {
+                "storage_type": storage_type,
+                "advice":       STORAGE_MESSAGES.get(storage_type, "Store safely.")
+            }
+        except Exception:
+            result[item_name] = {
+                "storage_type": "room_temp",
+                "advice":       "Store at room temperature in a cool, dry place."
+            }
+
+    return result
