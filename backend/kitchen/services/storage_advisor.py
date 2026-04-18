@@ -10,9 +10,6 @@ STORAGE_MESSAGES = {
 }
 
 # ── HARDCODED OVERRIDES ───────────────────────────────────────────────────────
-# For items where storage is a biological/physical fact — not something to predict.
-# The ML model will never be reliable for these without massive domain-specific data.
-# Add any new item here if you know its storage type for certain.
 STORAGE_OVERRIDES = {
     # Freezer items
     "ice_cream":     "freezer",
@@ -45,9 +42,10 @@ STORAGE_OVERRIDES = {
     "coconut":       "fridge",
     "peas":          "fridge",
     "beans":         "fridge",
+    "chocolate":     "fridge",
 
     # Room temp items
-    "chocolate":     "room_temp",
+    
     "rice":          "room_temp",
     "idli_rice":     "room_temp",
     "basmati_rice":  "room_temp",
@@ -66,7 +64,6 @@ STORAGE_OVERRIDES = {
     "cumin":         "room_temp",
     "black_pepper":  "room_temp",
     "tamarind":      "room_temp",
-    "urad_dal":      "room_temp",
     "semolina":      "room_temp",
     "noodles":       "room_temp",
     "pasta":         "room_temp",
@@ -107,7 +104,39 @@ def _resolve_storage_type(item_name: str, features: dict) -> str:
     return predict_storage_type(features)
 
 
+# ── NEW: lookup any ingredient, inventory or not ──────────────────────────────
+def get_storage_advice_by_name(item_name: str) -> dict:
+    """
+    Check storage type for ANY ingredient name.
+    Does NOT require the item to be in the inventory.
+    Falls back to ML model if not in overrides list.
+    """
+    item_name = item_name.strip().lower().replace(" ", "_")
+
+    inventory  = load_inventory()
+    thresholds = load_thresholds()
+
+    # Build features (will use zeros if item not in inventory — that's fine)
+    features     = _build_features(item_name, inventory, thresholds)
+    storage_type = _resolve_storage_type(item_name, features)
+
+    in_inventory = item_name in inventory
+
+    return {
+        "item":         item_name,
+        "storage_type": storage_type,
+        "advice":       STORAGE_MESSAGES.get(storage_type, "Store safely."),
+        "in_inventory": in_inventory,
+        "source":       "override" if item_name in STORAGE_OVERRIDES else "ml_model",
+    }
+# ─────────────────────────────────────────────────────────────────────────────
+
+
 def get_storage_advice(item_name: str) -> dict:
+    """
+    Original function — requires item to be in inventory.
+    Kept for backward compatibility with /storage/{item_name} route.
+    """
     inventory  = load_inventory()
     thresholds = load_thresholds()
 
