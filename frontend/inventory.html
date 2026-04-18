@@ -79,6 +79,7 @@
       <div class="nav-section-label">Intelligence</div>
       <a href="predictions.html" class="nav-item"><span class="nav-item__icon">🔮</span> Predictions</a>
       <a href="shopping.html" class="nav-item"><span class="nav-item__icon">🛒</span> Shopping List</a>
+      <a href="storage.html" class="nav-item"><span class="nav-item__icon">🧊</span> Storage Checker</a>
     </nav>
     <div class="sidebar__footer">
       <div class="conn-status">
@@ -111,6 +112,12 @@
         <option value="out">Out of Stock</option>
         <option value="low">Low Stock</option>
         <option value="good">Well Stocked</option>
+      </select>
+      <select class="form-input" id="filter-storage" style="width:150px" onchange="filterTable()">
+        <option value="all">All Storage</option>
+        <option value="fridge">❄️ Fridge</option>
+        <option value="freezer">🧊 Freezer</option>
+        <option value="room_temp">🌡️ Room Temp</option>
       </select>
       <button class="btn btn--secondary btn--sm" onclick="loadInventory()">↻ Refresh</button>
     </div>
@@ -208,7 +215,9 @@
   window.loadInventory = async function() {
     try {
       const res = await API.getInventory();
-      const items = Object.entries(res.data || {});
+      // Backend may return { data: {...} } or the inventory object directly
+      const raw = res.data ?? res;
+      const items = Object.entries(raw);
       window._allItems = items;
       renderTable(items);
     } catch(e) {
@@ -250,7 +259,11 @@
         </td>
         <td><span class="unit">${data.unit || '—'}</span></td>
         <td style="font-family:var(--font-mono);font-size:11px;color:var(--text-secondary)">${data.expiry_date || '—'}</td>
-        <td><span class="storage-tip">${data.storage === 'fridge' ? '❄️ fridge' : '🌡️ room temp'}</span></td>
+        <td><span class="storage-tip">${
+          data.storage_type === 'fridge'   ? '❄️ fridge'   :
+          data.storage_type === 'freezer'  ? '🧊 freezer'  :
+                                             '🌡️ room temp'
+        }</span></td>
         <td>${stBadge}</td>
         <td>
           <div class="action-btns">
@@ -264,12 +277,15 @@
 
   window.filterTable = function() {
     const q = document.getElementById('search-input').value.toLowerCase();
-    const statusFilter = document.getElementById('filter-status').value;
+    const statusFilter  = document.getElementById('filter-status').value;
+    const storageFilter = document.getElementById('filter-storage').value;
     const filtered = window._allItems.filter(([name, data]) => {
-      const st = getStatus(data.quantity ?? 0);
-      const matchSearch = name.toLowerCase().includes(q);
-      const matchStatus = statusFilter === 'all' || statusFilter === st;
-      return matchSearch && matchStatus;
+      const st      = getStatus(data.quantity ?? 0);
+      const storage = data.storage_type || 'room_temp';
+      const matchSearch  = name.toLowerCase().includes(q);
+      const matchStatus  = statusFilter  === 'all' || statusFilter  === st;
+      const matchStorage = storageFilter === 'all' || storageFilter === storage;
+      return matchSearch && matchStatus && matchStorage;
     });
     renderTable(filtered);
   };

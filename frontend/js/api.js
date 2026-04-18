@@ -94,6 +94,11 @@ export const API = {
   getStorageAll: () => apiFetch("/storage"),
   getStorage: (item_name) =>
     apiFetch(`/storage/${encodeURIComponent(item_name)}`),
+  checkStorageType: (item_name) =>
+    apiFetch("/storage/check", {
+      method: "POST",
+      body: JSON.stringify({ item: item_name }),
+    }),
 };
 
 export default API;

@@ -119,6 +119,54 @@
       border: 1px solid rgba(255,68,68,0.25);
       color: var(--red);
     }
+
+    /* ── Autocomplete dropdown ── */
+    .autocomplete-wrap {
+      position: relative;
+    }
+    .autocomplete-dropdown {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      right: 0;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      z-index: 999;
+      max-height: 220px;
+      overflow-y: auto;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      display: none;
+    }
+    .autocomplete-dropdown.open { display: block; }
+    .autocomplete-item {
+      padding: 10px 14px;
+      font-size: 13px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.1s;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+    .autocomplete-item:last-child { border-bottom: none; }
+    .autocomplete-item:hover,
+    .autocomplete-item.highlighted {
+      background: var(--bg-elevated);
+      color: var(--amber);
+    }
+    .autocomplete-item__match {
+      color: var(--amber);
+      font-weight: 600;
+    }
+    .autocomplete-empty {
+      padding: 12px 14px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
   </style>
 </head>
 <body>
@@ -132,12 +180,13 @@
     </div>
     <nav class="sidebar__nav">
       <div class="nav-section-label">Core</div>
-      <a href="index.html" class="nav-item"><span class="nav-item__icon">⬛</span> Dashboard</a>
+      <a href="index.html"     class="nav-item"><span class="nav-item__icon">⬛</span> Dashboard</a>
       <a href="inventory.html" class="nav-item"><span class="nav-item__icon">📦</span> Inventory</a>
-      <a href="dishes.html" class="nav-item active"><span class="nav-item__icon">🍽️</span> Dishes</a>
+      <a href="dishes.html"    class="nav-item active"><span class="nav-item__icon">🍽️</span> Dishes</a>
       <div class="nav-section-label">Intelligence</div>
       <a href="predictions.html" class="nav-item"><span class="nav-item__icon">🔮</span> Predictions</a>
-      <a href="shopping.html" class="nav-item"><span class="nav-item__icon">🛒</span> Shopping List</a>
+      <a href="shopping.html"    class="nav-item"><span class="nav-item__icon">🛒</span> Shopping List</a>
+      <a href="storage.html"     class="nav-item"><span class="nav-item__icon">🧊</span> Storage Checker</a>
     </nav>
     <div class="sidebar__footer">
       <div class="conn-status">
@@ -158,10 +207,10 @@
     </div>
 
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('check')">🔍 Check Dish</button>
-      <button class="tab-btn" onclick="switchTab('cook')">🍳 Cook Dish</button>
-      <button class="tab-btn" onclick="switchTab('recipes')">📋 Suggest Recipes</button>
-      <button class="tab-btn" onclick="switchTab('log')">📝 Log Dish</button>
+      <button class="tab-btn active" onclick="switchTab('check', this)">🔍 Check Dish</button>
+      <button class="tab-btn" onclick="switchTab('cook', this)">🍳 Cook Dish</button>
+      <button class="tab-btn" onclick="switchTab('recipes', this)">📋 Suggest Recipes</button>
+      <button class="tab-btn" onclick="switchTab('log', this)">📝 Log Dish</button>
     </div>
 
     <!-- Tab: Check -->
@@ -171,7 +220,10 @@
         <div class="dish-input-row">
           <div class="form-group" style="margin:0">
             <label class="form-label">Dish Name</label>
-            <input class="form-input" id="check-dish" placeholder="e.g. idli, biryani, dosa" />
+            <div class="autocomplete-wrap">
+              <input class="form-input" id="check-dish" placeholder="e.g. idli, biryani, dosa" autocomplete="off" />
+              <div class="autocomplete-dropdown" id="check-dish-drop"></div>
+            </div>
           </div>
           <div class="form-group" style="margin:0">
             <label class="form-label">Servings</label>
@@ -193,7 +245,10 @@
         <div class="dish-input-row">
           <div class="form-group" style="margin:0">
             <label class="form-label">Dish Name</label>
-            <input class="form-input" id="cook-dish" placeholder="e.g. idli, biryani, dosa" />
+            <div class="autocomplete-wrap">
+              <input class="form-input" id="cook-dish" placeholder="e.g. idli, biryani, dosa" autocomplete="off" />
+              <div class="autocomplete-dropdown" id="cook-dish-drop"></div>
+            </div>
           </div>
           <div class="form-group" style="margin:0">
             <label class="form-label">Servings</label>
@@ -231,7 +286,10 @@
           <div class="form-row">
             <div class="form-group" style="margin:0">
               <label class="form-label">Dish Name</label>
-              <input class="form-input" id="log-dish" placeholder="e.g. idli" />
+              <div class="autocomplete-wrap">
+                <input class="form-input" id="log-dish" placeholder="e.g. idli" autocomplete="off" />
+                <div class="autocomplete-dropdown" id="log-dish-drop"></div>
+              </div>
             </div>
             <div class="form-group" style="margin:0">
               <label class="form-label">Servings</label>
@@ -257,15 +315,162 @@
   checkConnection(API);
   document.getElementById('log-date').value = todayISO();
 
-  window.switchTab = function(tab) {
+  // ── All dish names from dishes.json (hardcoded from backend data) ──────────
+  const DISH_NAMES = [
+    "poori","aloo_poori","chapati","roti","butter_roti","aloo_paratha",
+    "paneer_paratha","gobi_paratha","dal_tadka","dal_fry","dal_rice",
+    "jeera_rice","veg_pulao","fried_rice","egg_fried_rice","biryani",
+    "chicken_biryani","veg_biryani","egg_curry","egg_bhurji","omelette_bread",
+    "veg_cutlet","aloo_bhaji","cabbage_poriyal","cauliflower_fry","mushroom_fry",
+    "veg_noodles","egg_noodles","noodles","pasta","tomato_rice","curd_rice",
+    "lemon_rice","coconut_rice","tamarind_rice","pongal","sambar","rasam",
+    "idli","dosa","ghee_dosa","masala_dosa","egg_dosa","kootu","poriyal",
+    "avial","rajma","chole","paneer_butter_masala","sandwich","veg_sandwich",
+    "salad","fruit_salad","banana_shake","milkshake","coffee","tea",
+    "chocolate_milk","ice_cream","jam_bread"
+  ];
+
+  // ── Autocomplete engine ────────────────────────────────────────────────────
+  // Matches: prefix first, then substring, then fuzzy (chars in order)
+  function scoreMatch(dish, query) {
+    const d = dish.replace(/_/g, ' ');
+    const q = query.toLowerCase().replace(/_/g, ' ');
+    if (d.startsWith(q))          return 3; // best: starts with query
+    if (d.includes(q))            return 2; // good: substring
+    // fuzzy: all query chars appear in order
+    let di = 0;
+    for (const ch of q) {
+      di = d.indexOf(ch, di);
+      if (di === -1) return 0;
+      di++;
+    }
+    return 1;
+  }
+
+  function getMatches(query) {
+    if (!query || query.length < 1) return [];
+    const q = query.toLowerCase().trim();
+    return DISH_NAMES
+      .map(name => ({ name, score: scoreMatch(name, q) }))
+      .filter(x => x.score > 0)
+      .sort((a, b) => b.score - a.score || a.name.localeCompare(b.name))
+      .slice(0, 8)
+      .map(x => x.name);
+  }
+
+  // Highlight the matched part in the suggestion
+  function highlightMatch(dishName, query) {
+    const display = dishName.replace(/_/g, ' ');
+    const q = query.toLowerCase().replace(/_/g, ' ');
+    const idx = display.toLowerCase().indexOf(q);
+    if (idx === -1) return display;
+    return (
+      display.slice(0, idx) +
+      `<span class="autocomplete-item__match">${display.slice(idx, idx + q.length)}</span>` +
+      display.slice(idx + q.length)
+    );
+  }
+
+  // ── Attach autocomplete to an input ───────────────────────────────────────
+  function attachAutocomplete(inputId, dropId) {
+    const input = document.getElementById(inputId);
+    const drop  = document.getElementById(dropId);
+    let highlighted = -1;
+    let items = [];
+
+    function show(matches, query) {
+      items = matches;
+      highlighted = -1;
+      if (!matches.length) {
+        drop.innerHTML = `<div class="autocomplete-empty">No dishes found for "${query}"</div>`;
+        drop.classList.add('open');
+        return;
+      }
+      drop.innerHTML = matches.map((name, i) =>
+        `<div class="autocomplete-item" data-idx="${i}" data-name="${name}">
+          🍽️ ${highlightMatch(name, query)}
+        </div>`
+      ).join('');
+      drop.classList.add('open');
+
+      drop.querySelectorAll('.autocomplete-item').forEach(el => {
+        el.addEventListener('mousedown', e => {
+          e.preventDefault(); // prevent blur before click
+          selectItem(el.dataset.name);
+        });
+      });
+    }
+
+    function hide() {
+      drop.classList.remove('open');
+      highlighted = -1;
+    }
+
+    function selectItem(name) {
+      input.value = name;
+      hide();
+      input.focus();
+    }
+
+    function updateHighlight() {
+      drop.querySelectorAll('.autocomplete-item').forEach((el, i) => {
+        el.classList.toggle('highlighted', i === highlighted);
+      });
+    }
+
+    input.addEventListener('input', () => {
+      const q = input.value.trim();
+      if (!q) { hide(); return; }
+      show(getMatches(q), q);
+    });
+
+    input.addEventListener('keydown', e => {
+      if (!drop.classList.contains('open')) return;
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        highlighted = Math.min(highlighted + 1, items.length - 1);
+        updateHighlight();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        highlighted = Math.max(highlighted - 1, -1);
+        updateHighlight();
+      } else if (e.key === 'Enter') {
+        if (highlighted >= 0 && items[highlighted]) {
+          e.preventDefault();
+          selectItem(items[highlighted]);
+        }
+      } else if (e.key === 'Escape') {
+        hide();
+      }
+    });
+
+    input.addEventListener('blur', () => {
+      // small delay so mousedown on item fires first
+      setTimeout(hide, 120);
+    });
+
+    input.addEventListener('focus', () => {
+      const q = input.value.trim();
+      if (q) show(getMatches(q), q);
+    });
+  }
+
+  // Attach to all three dish inputs
+  attachAutocomplete('check-dish', 'check-dish-drop');
+  attachAutocomplete('cook-dish',  'cook-dish-drop');
+  attachAutocomplete('log-dish',   'log-dish-drop');
+
+  // ── Tab switcher ──────────────────────────────────────────────────────────
+  window.switchTab = function(tab, btn) {
     document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('tab-' + tab).classList.add('active');
-    event.target.classList.add('active');
+    btn.classList.add('active');
   };
 
+  // ── Check Dish ────────────────────────────────────────────────────────────
   window.checkDish = async function() {
-    const dish = document.getElementById('check-dish').value.trim();
+    const dish     = document.getElementById('check-dish').value.trim();
     const servings = parseInt(document.getElementById('check-servings').value);
     if (!dish) { showToast('Enter a dish name', 'warning'); return; }
     const btn = document.getElementById('check-btn');
@@ -277,7 +482,10 @@
       document.getElementById('check-result').innerHTML = `
         <div class="can-cook-banner can-cook-banner--${canCook ? 'yes' : 'no'}">
           <span style="font-size:22px">${canCook ? '✅' : '❌'}</span>
-          <span>${canCook ? `You can cook <strong>${d.dish}</strong> for ${d.servings} servings!` : `Not enough ingredients to cook <strong>${d.dish}</strong>`}</span>
+          <span>${canCook
+            ? `You can cook <strong>${d.dish}</strong> for ${d.servings} servings!`
+            : `Not enough ingredients to cook <strong>${d.dish}</strong>`
+          }</span>
         </div>
         <div style="display:flex;flex-direction:column;gap:8px">
           ${(d.ingredients || []).map(i => `
@@ -290,14 +498,16 @@
         </div>
       `;
     } catch(e) {
-      document.getElementById('check-result').innerHTML = `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+      document.getElementById('check-result').innerHTML =
+        `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
     } finally {
       setLoading(btn, false);
     }
   };
 
+  // ── Cook Dish ─────────────────────────────────────────────────────────────
   window.cookDish = async function() {
-    const dish = document.getElementById('cook-dish').value.trim();
+    const dish     = document.getElementById('cook-dish').value.trim();
     const servings = parseInt(document.getElementById('cook-servings').value);
     if (!dish) { showToast('Enter a dish name', 'warning'); return; }
     if (!confirm(`Cook "${dish}" for ${servings} servings? This will deduct from inventory.`)) return;
@@ -319,12 +529,14 @@
         </div>
       `;
     } catch(e) {
-      document.getElementById('cook-result').innerHTML = `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+      document.getElementById('cook-result').innerHTML =
+        `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
     } finally {
       setLoading(btn, false);
     }
   };
 
+  // ── Suggest Recipes ───────────────────────────────────────────────────────
   window.suggestRecipes = async function() {
     const maxMissing = parseInt(document.getElementById('max-missing').value);
     const btn = document.getElementById('recipe-btn');
@@ -355,16 +567,18 @@
       if (!html) html = `<div class="empty-state"><div class="empty-state__icon">📋</div><p>No matching recipes found. Stock up your inventory!</p></div>`;
       document.getElementById('recipe-result').innerHTML = html;
     } catch(e) {
-      document.getElementById('recipe-result').innerHTML = `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+      document.getElementById('recipe-result').innerHTML =
+        `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
     } finally {
       setLoading(btn, false);
     }
   };
 
+  // ── Log Dish ──────────────────────────────────────────────────────────────
   window.logDish = async function() {
-    const dish = document.getElementById('log-dish').value.trim();
+    const dish     = document.getElementById('log-dish').value.trim();
     const servings = parseInt(document.getElementById('log-servings').value);
-    const date = document.getElementById('log-date').value;
+    const date     = document.getElementById('log-date').value;
     if (!dish || !date) { showToast('Fill in all fields', 'warning'); return; }
     const btn = document.getElementById('log-btn');
     setLoading(btn, true);
@@ -380,11 +594,19 @@
       `;
       document.getElementById('log-dish').value = '';
     } catch(e) {
-      document.getElementById('log-result').innerHTML = `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+      document.getElementById('log-result').innerHTML =
+        `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
     } finally {
       setLoading(btn, false);
     }
   };
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.autocomplete-wrap')) {
+      document.querySelectorAll('.autocomplete-dropdown').forEach(d => d.classList.remove('open'));
+    }
+  });
 </script>
 </body>
 </html>

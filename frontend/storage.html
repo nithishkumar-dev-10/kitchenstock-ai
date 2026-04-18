@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Storage Checker — Kitchen Stock AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .checker-wrap {
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    /* ── Search bar ── */
+    .storage-search {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+    .storage-search input {
+      flex: 1;
+      font-size: 15px;
+      padding: 12px 16px;
+    }
+    .storage-search button {
+      padding: 12px 22px;
+      white-space: nowrap;
+    }
+
+    /* ── Result card ── */
+    .result-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 28px;
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+    .result-card.visible { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card__top {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .storage-icon-big {
+      font-size: 52px;
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-md);
+      background: var(--bg-elevated);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .result-item-name {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 6px;
+      text-transform: capitalize;
+    }
+
+    .storage-type-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 99px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+    .storage-type-label--fridge    { background: rgba(59,130,246,0.15); color: #60a5fa; }
+    .storage-type-label--freezer   { background: rgba(139,92,246,0.15); color: #a78bfa; }
+    .storage-type-label--room_temp { background: rgba(234,179,8,0.15);  color: var(--amber); }
+
+    .result-advice {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+      padding: 14px 16px;
+      background: var(--bg-elevated);
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+    }
+
+    .result-meta {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .result-meta__pill {
+      font-size: 11px;
+      color: var(--text-muted);
+      background: var(--bg-elevated);
+      padding: 3px 10px;
+      border-radius: 99px;
+      font-family: var(--font-mono);
+    }
+
+    /* ── Divider ── */
+    .section-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 32px 0;
+    }
+
+    /* ── Recent searches ── */
+    .recent-header {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    .recent-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border);
+      background: var(--bg-elevated);
+      font-size: 12px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: var(--transition);
+      color: var(--text-secondary);
+    }
+    .chip:hover {
+      border-color: var(--amber);
+      color: var(--amber);
+    }
+
+    /* ── Error state ── */
+    .error-box {
+      padding: 16px 20px;
+      background: rgba(239,68,68,0.1);
+      border: 1px solid var(--red);
+      border-radius: var(--radius-sm);
+      color: var(--red);
+      font-size: 13px;
+      display: none;
+    }
+    .error-box.visible { display: block; }
+
+    /* ── Loading ── */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--amber);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Quick lookup grid ── */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .quick-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elevated);
+      cursor: pointer;
+      transition: var(--transition);
+      font-size: 12px;
+      font-family: var(--font-mono);
+      color: var(--text-secondary);
+    }
+    .quick-item:hover {
+      border-color: var(--amber);
+      color: var(--text-primary);
+    }
+  </style>
+</head>
+<body>
+<div class="app-shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar__logo">
+      <div class="sidebar__logo-mark">
+        <div class="logo-icon">🍳</div>
+        <div class="logo-text">KitchenStock<span>AI v1.0</span></div>
+      </div>
+    </div>
+    <nav class="sidebar__nav">
+      <div class="nav-section-label">Core</div>
+      <a href="index.html"     class="nav-item"><span class="nav-item__icon">⬛</span> Dashboard</a>
+      <a href="inventory.html" class="nav-item"><span class="nav-item__icon">📦</span> Inventory</a>
+      <a href="dishes.html"    class="nav-item"><span class="nav-item__icon">🍽️</span> Dishes</a>
+      <div class="nav-section-label">Intelligence</div>
+      <a href="predictions.html" class="nav-item"><span class="nav-item__icon">🔮</span> Predictions</a>
+      <a href="shopping.html"    class="nav-item"><span class="nav-item__icon">🛒</span> Shopping List</a>
+      <a href="storage.html"     class="nav-item active"><span class="nav-item__icon">🧊</span> Storage Checker</a>
+    </nav>
+    <div class="sidebar__footer">
+      <div class="conn-status">
+        <span class="conn-dot" id="connection-dot"></span>
+        <span id="connection-label">Checking…</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="topbar__title">Storage Checker</div>
+    <div class="topbar__right">
+      <span class="topbar__date" id="today-date"></span>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="main-content">
+    <div class="page-header">
+      <div class="page-header__title">Where should I store this?</div>
+      <div class="page-header__sub">Enter any ingredient — get instant storage advice powered by rule-based logic + ML</div>
+    </div>
+
+    <div class="checker-wrap">
+
+      <!-- Search -->
+      <div class="storage-search">
+        <input
+          class="form-input"
+          id="ingredient-input"
+          placeholder="e.g. milk, potato, chicken, cardamom…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="btn btn--primary" id="check-btn" onclick="checkStorage()">
+          Check Storage
+        </button>
+      </div>
+
+      <!-- Error -->
+      <div class="error-box" id="error-box"></div>
+
+      <!-- Result card -->
+      <div class="result-card" id="result-card">
+        <div class="result-card__top">
+          <div class="storage-icon-big" id="result-icon">❄️</div>
+          <div>
+            <div class="result-item-name" id="result-name">—</div>
+            <span class="storage-type-label" id="result-type-badge">—</span>
+          </div>
+        </div>
+        <div class="result-advice" id="result-advice">—</div>
+        <div class="result-meta" id="result-meta"></div>
+      </div>
+
+      <hr class="section-divider" />
+
+      <!-- Recent searches -->
+      <div id="recent-section" style="display:none">
+        <div class="recent-header">Recent Searches</div>
+        <div class="recent-chips" id="recent-chips"></div>
+        <hr class="section-divider" />
+      </div>
+
+      <!-- Quick lookups -->
+      <div>
+        <div class="recent-header">Quick Lookup</div>
+        <div class="quick-grid" id="quick-grid"></div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<script type="module">
+  import API from './js/api.js';
+  import { checkConnection, showToast, setLoading } from './js/utils.js';
+
+  checkConnection(API);
+
+  document.getElementById('today-date').textContent =
+    new Date().toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+
+  // ── Storage icons & badge config ──────────────────────────────────────────
+  const STORAGE_CONFIG = {
+    fridge:    { icon: '❄️',  label: '❄️ Fridge',    cls: 'fridge' },
+    freezer:   { icon: '🧊',  label: '🧊 Freezer',   cls: 'freezer' },
+    room_temp: { icon: '🌡️', label: '🌡️ Room Temp', cls: 'room_temp' },
+  };
+
+  // ── Quick lookup suggestions ───────────────────────────────────────────────
+  const QUICK_ITEMS = [
+    { name: 'milk',        icon: '🥛' },
+    { name: 'onion',       icon: '🧅' },
+    { name: 'chicken',     icon: '🍗' },
+    { name: 'rice',        icon: '🍚' },
+    { name: 'egg',         icon: '🥚' },
+    { name: 'tomato',      icon: '🍅' },
+    { name: 'ice_cream',   icon: '🍦' },
+    { name: 'butter',      icon: '🧈' },
+    { name: 'potato',      icon: '🥔' },
+    { name: 'banana',      icon: '🍌' },
+    { name: 'fish',        icon: '🐟' },
+    { name: 'cardamom',    icon: '🌿' },
+  ];
+
+  // Render quick grid
+  const quickGrid = document.getElementById('quick-grid');
+  quickGrid.innerHTML = QUICK_ITEMS.map(i =>
+    `<div class="quick-item" onclick="quickLookup('${i.name}')">
+      <span>${i.icon}</span>
+      <span>${i.name.replace(/_/g,' ')}</span>
+    </div>`
+  ).join('');
+
+  // ── Recent searches (sessionStorage) ──────────────────────────────────────
+  let recentSearches = [];
+
+  function addToRecent(name) {
+    recentSearches = [name, ...recentSearches.filter(r => r !== name)].slice(0, 8);
+    renderRecent();
+  }
+
+  function renderRecent() {
+    const section = document.getElementById('recent-section');
+    const chips   = document.getElementById('recent-chips');
+    if (!recentSearches.length) { section.style.display = 'none'; return; }
+    section.style.display = 'block';
+    chips.innerHTML = recentSearches.map(name =>
+      `<span class="chip" onclick="quickLookup('${name}')">
+        ${STORAGE_CONFIG[window._lastResults?.[name]]?.icon ?? '🔍'}
+        ${name.replace(/_/g,' ')}
+      </span>`
+    ).join('');
+  }
+
+  window._lastResults = {};
+
+  // ── Main check function ────────────────────────────────────────────────────
+  window.checkStorage = async function() {
+    const raw   = document.getElementById('ingredient-input').value.trim();
+    const btn   = document.getElementById('check-btn');
+    const errEl = document.getElementById('error-box');
+    const card  = document.getElementById('result-card');
+
+    if (!raw) {
+      errEl.textContent = 'Please enter an ingredient name.';
+      errEl.classList.add('visible');
+      card.classList.remove('visible');
+      return;
+    }
+
+    errEl.classList.remove('visible');
+    setLoading(btn, true);
+
+    try {
+      const res  = await API.checkStorageType(raw);
+      const data = res.data;
+
+      const cfg  = STORAGE_CONFIG[data.storage_type] || STORAGE_CONFIG.room_temp;
+
+      // Populate card
+      document.getElementById('result-icon').textContent = cfg.icon;
+      document.getElementById('result-name').textContent =
+        data.item.replace(/_/g, ' ');
+      document.getElementById('result-advice').textContent = data.advice;
+
+      const badge = document.getElementById('result-type-badge');
+      badge.textContent = cfg.label;
+      badge.className = `storage-type-label storage-type-label--${cfg.cls}`;
+
+      // Meta pills
+      const metaEl = document.getElementById('result-meta');
+      const pills = [];
+      pills.push(`Source: ${data.source === 'override' ? '📋 rule-based' : '🤖 ML model'}`);
+      if (data.in_inventory !== undefined) {
+        pills.push(data.in_inventory ? '✓ In your inventory' : '○ Not in inventory');
+      }
+      metaEl.innerHTML = pills
+        .map(p => `<span class="result-meta__pill">${p}</span>`)
+        .join('');
+
+      card.classList.add('visible');
+
+      // Track for recent
+      window._lastResults[data.item] = data.storage_type;
+      addToRecent(data.item);
+
+    } catch(e) {
+      errEl.textContent = `Error: ${e.message}`;
+      errEl.classList.add('visible');
+      card.classList.remove('visible');
+      showToast(e.message, 'error');
+    } finally {
+      setLoading(btn, false);
+    }
+  };
+
+  window.quickLookup = function(name) {
+    document.getElementById('ingredient-input').value = name.replace(/_/g, ' ');
+    checkStorage();
+  };
+
+  // Enter key support
+  document.getElementById('ingredient-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') checkStorage();
+  });
+</script>
+</body>
+</html>
