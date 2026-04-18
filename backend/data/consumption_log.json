@@ -363,5 +363,10 @@
     "dish": "idli",
     "servings": 2,
     "date": "2026-04-10"
+  },
+  {
+    "dish": "sambar",
+    "servings": 2,
+    "date": "2026-04-18"
   }
 ]
