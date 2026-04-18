@@ -168,13 +168,13 @@
         "storage_type": "fridge"
     },
     "butter": {
-        "quantity": 800,
+        "quantity": 760,
         "unit": "g",
         "expiry_date": "2026-05-15",
         "storage_type": "fridge"
     },
     "cheese": {
-        "quantity": 600,
+        "quantity": 540,
         "unit": "g",
         "expiry_date": "2026-05-15",
         "storage_type": "fridge"
@@ -294,7 +294,7 @@
         "storage_type": "fridge"
     },
     "bread": {
-        "quantity": 4,
+        "quantity": 0,
         "unit": "count",
         "expiry_date": "2026-04-12",
         "storage_type": "room_temp"
@@ -444,7 +444,7 @@
         "storage_type": "fridge"
     },
     "urad_dal": {
-        "quantity": 4800,
+        "quantity": 4600,
         "unit": "g",
         "expiry_date": null,
         "storage_type": "room_temp"
@@ -474,7 +474,7 @@
         "storage_type": "room_temp"
     },
     "idli_rice": {
-        "quantity": 9600,
+        "quantity": 9200,
         "unit": "g",
         "expiry_date": null,
         "storage_type": "room_temp"

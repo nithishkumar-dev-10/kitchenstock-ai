@@ -254,8 +254,27 @@
             <label class="form-label">Servings</label>
             <input class="form-input" id="cook-servings" type="number" value="2" min="1" style="width:90px" />
           </div>
-          <button class="btn btn--primary" id="cook-btn" onclick="cookDish()" style="background:var(--green);color:#000">Cook!</button>
+          <button class="btn btn--primary" id="cook-btn" onclick="confirmCook()" style="background:var(--green);color:#000">Cook!</button>
         </div>
+
+        <!-- Inline confirm — replaces browser alert -->
+        <div id="cook-confirm" style="display:none; margin-bottom:16px;
+          padding:16px 20px; border-radius:var(--radius-md);
+          background:rgba(234,179,8,0.08); border:1px solid rgba(234,179,8,0.3);">
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <span style="font-size:13px;color:var(--amber);flex:1">
+              ⚠ Cook <strong id="confirm-dish-name"></strong> for
+              <strong id="confirm-servings"></strong> servings?
+              This will deduct ingredients from inventory.
+            </span>
+            <div style="display:flex;gap:8px">
+              <button class="btn btn--secondary btn--sm" onclick="cancelCook()">Cancel</button>
+              <button class="btn btn--primary btn--sm" id="cook-confirm-btn"
+                onclick="executeCook()" style="background:var(--green);color:#000">Yes, Cook!</button>
+            </div>
+          </div>
+        </div>
+
         <div id="cook-result"></div>
       </div>
     </div>
@@ -506,12 +525,25 @@
   };
 
   // ── Cook Dish ─────────────────────────────────────────────────────────────
-  window.cookDish = async function() {
+  window.confirmCook = function() {
     const dish     = document.getElementById('cook-dish').value.trim();
     const servings = parseInt(document.getElementById('cook-servings').value);
     if (!dish) { showToast('Enter a dish name', 'warning'); return; }
-    if (!confirm(`Cook "${dish}" for ${servings} servings? This will deduct from inventory.`)) return;
-    const btn = document.getElementById('cook-btn');
+    document.getElementById('confirm-dish-name').textContent = dish.replace(/_/g,' ');
+    document.getElementById('confirm-servings').textContent  = servings;
+    document.getElementById('cook-confirm').style.display    = 'block';
+    document.getElementById('cook-result').innerHTML         = '';
+  };
+
+  window.cancelCook = function() {
+    document.getElementById('cook-confirm').style.display = 'none';
+  };
+
+  window.executeCook = async function() {
+    const dish     = document.getElementById('cook-dish').value.trim();
+    const servings = parseInt(document.getElementById('cook-servings').value);
+    document.getElementById('cook-confirm').style.display = 'none';
+    const btn = document.getElementById('cook-confirm-btn');
     setLoading(btn, true);
     try {
       const res = await API.cookDish(dish, servings);

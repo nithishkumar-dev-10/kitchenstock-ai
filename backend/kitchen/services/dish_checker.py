@@ -18,24 +18,29 @@ def check_ingredients(dish_name: str, servings: int) -> dict:
     can_cook = True
 
     for item, qty in ingredients.items():
-        required = qty * servings
-        available = inventory.get(item, {}).get("quantity", 0)  # Safe: default 0
-        enough = available >= required
+        if item == "steps":          # skip the steps list — not an ingredient
+            continue
+        if not isinstance(qty, (int, float)):  # safety: skip any non-numeric value
+            continue
+
+        required  = qty * servings
+        available = inventory.get(item, {}).get("quantity", 0)
+        enough    = available >= required
 
         if not enough:
             can_cook = False
 
         result.append({
-            "item": item,
-            "required": required,
+            "item":      item,
+            "required":  required,
             "available": available,
-            "enough": enough
+            "enough":    enough
         })
 
     return {
-    "dish": dish_name,
-    "servings": servings,
-    "can_cook": can_cook,
-    "ingredients": result,
-    "steps": dishes[dish_name].get("steps", [])
-}
+        "dish":        dish_name,
+        "servings":    servings,
+        "can_cook":    can_cook,
+        "ingredients": result,
+        "steps":       dishes[dish_name].get("steps", [])
+    }
