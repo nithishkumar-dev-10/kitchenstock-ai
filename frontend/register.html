@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Create Account — KitchenStock AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-base);
+      font-family: var(--font-body);
+    }
+    .auth-wrap {
+      width: 100%;
+      max-width: 420px;
+      padding: 2rem 1rem;
+    }
+    .auth-logo {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    .auth-logo__icon { font-size: 36px; display: block; margin-bottom: 0.5rem; }
+    .auth-logo__name {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-primary);
+      letter-spacing: -0.5px;
+    }
+    .auth-logo__name span { color: var(--amber); }
+    .auth-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem 2rem 1.75rem;
+    }
+    .auth-card__title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+    }
+    .auth-card__sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 1.8rem;
+    }
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .field-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .field input {
+      width: 100%;
+      height: 42px;
+      padding: 0 40px 0 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: var(--font-body);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus { border-color: var(--amber); }
+    .field input::placeholder { color: var(--text-muted); }
+    .field input.invalid { border-color: var(--red); }
+    .toggle-eye {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 16px;
+      padding: 0;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+    .toggle-eye:hover { color: var(--text-primary); }
+    .btn-primary {
+      width: 100%;
+      height: 44px;
+      background: var(--amber);
+      color: #000;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      margin-top: 0.5rem;
+      font-family: var(--font-body);
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    .auth-switch {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 1.4rem;
+    }
+    .auth-switch a {
+      color: var(--amber);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .auth-switch a:hover { text-decoration: underline; }
+    .error-msg {
+      display: none;
+      background: rgba(220,53,53,0.1);
+      border: 1px solid rgba(220,53,53,0.3);
+      border-radius: var(--radius-sm);
+      color: var(--red);
+      font-size: 13px;
+      padding: 10px 12px;
+      margin-bottom: 1rem;
+    }
+    .error-msg.visible { display: block; }
+    .password-hint {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="auth-wrap">
+  <div class="auth-logo">
+    <span class="auth-logo__icon">🍳</span>
+    <div class="auth-logo__name">KitchenStock<span>AI</span></div>
+  </div>
+
+  <div class="auth-card">
+    <div class="auth-card__title">Create your account</div>
+    <div class="auth-card__sub">Already have one? <a href="login.html" style="color:var(--amber);text-decoration:none;font-weight:500;">Sign in</a></div>
+
+    <div class="error-msg" id="error-msg"></div>
+
+    <div class="field">
+      <label>Full Name</label>
+      <div class="field-input-wrap">
+        <input type="text" id="name" placeholder="Nithish Kumar" autocomplete="name" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Email</label>
+      <div class="field-input-wrap">
+        <input type="email" id="email" placeholder="you@email.com" autocomplete="email" />
+      </div>
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <div class="field-input-wrap">
+        <input type="password" id="password" placeholder="Min. 8 characters" autocomplete="new-password" />
+        <button class="toggle-eye" type="button" onclick="togglePwd('password', this)">👁</button>
+      </div>
+      <div class="password-hint">At least 8 characters</div>
+    </div>
+    <div class="field">
+      <label>Confirm Password</label>
+      <div class="field-input-wrap">
+        <input type="password" id="confirm" placeholder="Repeat password" autocomplete="new-password" />
+        <button class="toggle-eye" type="button" onclick="togglePwd('confirm', this)">👁</button>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="signup-btn" onclick="handleSignup()">Create account</button>
+
+    <div class="auth-switch">
+      Already have an account? <a href="login.html">Sign in</a>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { authStore } from './js/auth.js';
+
+  if (authStore.isLoggedIn()) {
+    window.location.href = 'index.html';
+  }
+
+  window.togglePwd = function(id, btn) {
+    const input = document.getElementById(id);
+    const isHidden = input.type === 'password';
+    input.type = isHidden ? 'text' : 'password';
+    btn.textContent = isHidden ? '🙈' : '👁';
+  };
+
+  window.handleSignup = async function () {
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm = document.getElementById('confirm').value;
+    const btn = document.getElementById('signup-btn');
+    const errEl = document.getElementById('error-msg');
+
+    errEl.classList.remove('visible');
+    document.getElementById('confirm').classList.remove('invalid');
+
+    if (!name || !email || !password || !confirm) {
+      errEl.textContent = 'Please fill in all fields.';
+      errEl.classList.add('visible');
+      return;
+    }
+    if (password.length < 8) {
+      errEl.textContent = 'Password must be at least 8 characters.';
+      errEl.classList.add('visible');
+      return;
+    }
+    if (password !== confirm) {
+      errEl.textContent = 'Passwords do not match.';
+      errEl.classList.add('visible');
+      document.getElementById('confirm').classList.add('invalid');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Creating account…';
+
+    try {
+      const res = await fetch('http://localhost:8000/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.detail || 'Signup failed');
+
+      authStore.save(data.access_token, data.name, data.user_id);
+      window.location.href = 'onboarding.html';
+
+    } catch (err) {
+      errEl.textContent = err.message;
+      errEl.classList.add('visible');
+      btn.disabled = false;
+      btn.textContent = 'Create account';
+    }
+  };
+</script>
+</body>
+</html>
