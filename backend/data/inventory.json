@@ -42,7 +42,7 @@
         "storage_type": "room_temp"
     },
     "toor_dal": {
-        "quantity": 10000,
+        "quantity": 9700,
         "unit": "g",
         "expiry_date": null,
         "storage_type": "room_temp"
@@ -72,13 +72,13 @@
         "storage_type": "room_temp"
     },
     "onion": {
-        "quantity": 7000,
+        "quantity": 6800,
         "unit": "g",
         "expiry_date": "2026-04-20",
         "storage_type": "room_temp"
     },
     "tomato": {
-        "quantity": 6000,
+        "quantity": 5800,
         "unit": "g",
         "expiry_date": "2026-04-15",
         "storage_type": "room_temp"
@@ -90,13 +90,13 @@
         "storage_type": "room_temp"
     },
     "carrot": {
-        "quantity": 3000,
+        "quantity": 2900,
         "unit": "g",
         "expiry_date": "2026-04-18",
         "storage_type": "fridge"
     },
     "beans": {
-        "quantity": 2500,
+        "quantity": 2400,
         "unit": "g",
         "expiry_date": "2026-04-16",
         "storage_type": "fridge"
@@ -444,13 +444,13 @@
         "storage_type": "fridge"
     },
     "urad_dal": {
-        "quantity": 4600,
+        "quantity": 4400,
         "unit": "g",
         "expiry_date": null,
         "storage_type": "room_temp"
     },
     "tamarind": {
-        "quantity": 500,
+        "quantity": 460,
         "unit": "g",
         "expiry_date": null,
         "storage_type": "room_temp"
@@ -474,7 +474,7 @@
         "storage_type": "room_temp"
     },
     "idli_rice": {
-        "quantity": 9200,
+        "quantity": 8800,
         "unit": "g",
         "expiry_date": null,
         "storage_type": "room_temp"
