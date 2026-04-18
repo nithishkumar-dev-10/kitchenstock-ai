@@ -211,6 +211,7 @@
       <button class="tab-btn" onclick="switchTab('cook', this)">🍳 Cook Dish</button>
       <button class="tab-btn" onclick="switchTab('recipes', this)">📋 Suggest Recipes</button>
       <button class="tab-btn" onclick="switchTab('log', this)">📝 Log Dish</button>
+      <button class="tab-btn" onclick="switchTab('howto', this)">&#x1F468;&#x200D;&#x1F373; How to Make</button>
     </div>
 
     <!-- Tab: Check -->
@@ -322,6 +323,30 @@
           <button class="btn btn--primary" id="log-btn" onclick="logDish()">Log Dish</button>
         </div>
         <div id="log-result" style="margin-top:16px"></div>
+      </div>
+    </div>
+    <!-- Tab: How to Make -->
+    <div class="tab-panel" id="tab-howto">
+      <div class="card">
+        <div class="card__title"><span class="card__title-icon">&#x1F468;&#x200D;&#x1F373;</span> How to Make</div>
+        <p style="font-size:13px;color:var(--text-secondary);margin-bottom:20px">
+          Enter any dish and servings — get step-by-step cooking instructions scaled to your portions.
+        </p>
+        <div class="dish-input-row">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Dish Name</label>
+            <div class="autocomplete-wrap">
+              <input class="form-input" id="howto-dish" placeholder="e.g. biryani, dosa, pongal" autocomplete="off" />
+              <div class="autocomplete-dropdown" id="howto-dish-drop"></div>
+            </div>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Servings</label>
+            <input class="form-input" id="howto-servings" type="number" value="2" min="1" style="width:90px" />
+          </div>
+          <button class="btn btn--primary" id="howto-btn" onclick="showHowTo()">Get Steps</button>
+        </div>
+        <div id="howto-result"></div>
       </div>
     </div>
   </main>
@@ -474,10 +499,11 @@
     });
   }
 
-  // Attach to all three dish inputs
-  attachAutocomplete('check-dish', 'check-dish-drop');
-  attachAutocomplete('cook-dish',  'cook-dish-drop');
-  attachAutocomplete('log-dish',   'log-dish-drop');
+  // Attach to all four dish inputs
+  attachAutocomplete('check-dish',  'check-dish-drop');
+  attachAutocomplete('cook-dish',   'cook-dish-drop');
+  attachAutocomplete('log-dish',    'log-dish-drop');
+  attachAutocomplete('howto-dish',  'howto-dish-drop');
 
   // ── Tab switcher ──────────────────────────────────────────────────────────
   window.switchTab = function(tab, btn) {
@@ -631,6 +657,148 @@
     } finally {
       setLoading(btn, false);
     }
+  };
+
+  // ── How to Make ───────────────────────────────────────────────────────────
+  // All dish data with steps — pulled from dishes.json structure
+  const DISHES_DATA = {
+    "poori":               { steps: ["Prepare dough using flour and water","Divide into small balls","Roll into small circles","Heat oil in a pan","Deep fry until golden and puffed"], ingredients: {flour:150,oil:50} },
+    "aloo_poori":          { steps: ["Prepare dough using flour and water","Boil and mash potatoes","Roll dough into discs","Heat oil in a pan","Deep fry and serve with potato curry"], ingredients: {flour:150,potato:200,oil:50} },
+    "chapati":             { steps: ["Prepare soft dough using flour and water","Divide into balls","Roll into flat circles","Cook on hot pan","Flip until both sides cook"], ingredients: {flour:100,oil:10} },
+    "roti":                { steps: ["Prepare dough with flour and water","Roll into thin circles","Cook on hot pan","Flip until lightly browned","Serve hot"], ingredients: {flour:100} },
+    "butter_roti":         { steps: ["Prepare dough","Roll into flat circles","Cook on hot pan","Apply butter","Serve warm"], ingredients: {flour:100,butter:20} },
+    "aloo_paratha":        { steps: ["Prepare dough","Boil and mash potatoes","Stuff into dough","Roll into flatbread","Cook on pan with oil"], ingredients: {flour:120,potato:150,oil:20} },
+    "paneer_paratha":      { steps: ["Prepare dough","Grate paneer","Stuff into dough","Roll flat","Cook on pan"], ingredients: {flour:120,paneer:100,oil:20} },
+    "gobi_paratha":        { steps: ["Prepare dough","Grate cauliflower","Stuff into dough","Roll flat","Cook on pan with oil"], ingredients: {flour:120,cauliflower:150,oil:20} },
+    "dal_tadka":           { steps: ["Boil toor dal","Heat oil","Saute onion","Add dal","Simmer and serve"], ingredients: {toor_dal:150,onion:100,oil:30} },
+    "dal_fry":             { steps: ["Cook moong dal","Heat oil","Saute onion","Add dal","Cook and serve"], ingredients: {moong_dal:150,onion:100,oil:30} },
+    "dal_rice":            { steps: ["Cook rice","Boil dal","Saute onion","Mix dal and rice","Serve hot"], ingredients: {rice:150,toor_dal:150,onion:50,oil:30} },
+    "jeera_rice":          { steps: ["Cook rice","Heat oil","Add cumin seeds","Mix rice","Serve hot"], ingredients: {rice:200,cumin:5,oil:20} },
+    "veg_pulao":           { steps: ["Wash rice","Saute vegetables","Add rice and water","Cook until done","Serve hot"], ingredients: {rice:200,carrot:50,beans:50,peas:50} },
+    "fried_rice":          { steps: ["Cook rice and cool","Scramble eggs","Saute vegetables","Add rice","Mix with soy sauce"], ingredients: {rice:200,carrot:50,beans:50,egg:2,soy_sauce:10} },
+    "egg_fried_rice":      { steps: ["Cook rice","Scramble eggs","Add rice","Mix well","Cook and serve"], ingredients: {rice:200,egg:2,oil:20,soy_sauce:10} },
+    "biryani":             { steps: ["Marinate chicken","Cook rice","Fry onions","Layer rice and chicken","Cook on low flame"], ingredients: {basmati_rice:250,chicken:400,onion:100,oil:40,curd:50} },
+    "chicken_biryani":     { steps: ["Marinate chicken","Cook rice","Saute onion and tomato","Add chicken","Layer with rice"], ingredients: {basmati_rice:250,chicken:400,onion:150,tomato:100,garam_masala:10} },
+    "veg_biryani":         { steps: ["Cook rice","Saute vegetables","Add spices","Mix rice","Cook on low heat"], ingredients: {basmati_rice:250,carrot:100,beans:100,potato:100} },
+    "egg_curry":           { steps: ["Boil eggs","Saute onion and tomato","Add spices","Add eggs","Cook gravy"], ingredients: {egg:3,onion:100,tomato:100,oil:30} },
+    "egg_bhurji":          { steps: ["Heat oil","Saute onion","Add eggs","Scramble","Cook and serve"], ingredients: {egg:3,onion:100,oil:20} },
+    "omelette_bread":      { steps: ["Beat eggs in a bowl","Heat oil in a pan","Cook omelette","Toast bread slices","Serve together"], ingredients: {egg:2,bread:2,oil:10} },
+    "veg_cutlet":          { steps: ["Boil and mash potatoes","Mix vegetables","Shape into cutlets","Heat oil in pan","Fry until golden"], ingredients: {potato:150,carrot:100,beans:100,oil:30} },
+    "aloo_bhaji":          { steps: ["Boil and peel potatoes","Heat oil in pan","Saute potatoes","Add salt and spices","Cook until slightly crispy"], ingredients: {potato:200,oil:30} },
+    "cabbage_poriyal":     { steps: ["Chop cabbage finely","Heat oil in pan","Saute cabbage","Cook until soft","Serve hot"], ingredients: {cabbage:200,oil:20} },
+    "cauliflower_fry":     { steps: ["Cut cauliflower into pieces","Heat oil in pan","Fry cauliflower","Cook until golden","Serve hot"], ingredients: {cauliflower:200,oil:30} },
+    "mushroom_fry":        { steps: ["Clean mushrooms","Heat oil in pan","Saute mushrooms","Cook until soft","Serve hot"], ingredients: {mushroom:200,oil:30} },
+    "veg_noodles":         { steps: ["Boil noodles","Heat pan","Saute vegetables","Add noodles","Mix and serve"], ingredients: {noodles:200,carrot:50,capsicum:50} },
+    "egg_noodles":         { steps: ["Boil noodles","Scramble eggs","Add noodles","Mix with oil","Cook and serve"], ingredients: {noodles:200,egg:2,oil:20} },
+    "noodles":             { steps: ["Boil noodles","Heat oil","Saute vegetables","Add noodles","Mix well"], ingredients: {noodles:200,carrot:50,capsicum:50,oil:20} },
+    "pasta":               { steps: ["Boil pasta","Heat butter","Add pasta","Add cheese","Mix and serve"], ingredients: {pasta:200,cheese:50,butter:20} },
+    "tomato_rice":         { steps: ["Cook rice","Saute tomatoes","Cook until soft","Mix with rice","Serve hot"], ingredients: {rice:200,tomato:150,oil:20} },
+    "curd_rice":           { steps: ["Cook rice and cool","Add curd","Mix well","Adjust salt","Serve chilled"], ingredients: {rice:200,curd:150} },
+    "lemon_rice":          { steps: ["Cook rice","Heat oil","Add lemon juice","Mix rice","Serve fresh"], ingredients: {rice:200,lemon:1,oil:20} },
+    "coconut_rice":        { steps: ["Cook rice","Grate coconut","Heat oil","Mix coconut with rice","Serve hot"], ingredients: {rice:200,coconut:100,oil:20} },
+    "tamarind_rice":       { steps: ["Cook rice","Prepare tamarind extract","Heat oil","Mix with rice","Serve hot"], ingredients: {rice:200,tamarind:20,oil:20} },
+    "pongal":              { steps: ["Cook rice and dal together","Heat ghee","Add cumin and pepper","Mix into rice","Serve hot"], ingredients: {rice:150,moong_dal:100,ghee:20,cumin:5,black_pepper:5} },
+    "sambar":              { steps: ["Cook toor dal","Prepare tamarind water","Add vegetables","Mix dal","Simmer and serve"], ingredients: {toor_dal:150,onion:100,tomato:100,carrot:50,beans:50,tamarind:20} },
+    "rasam":               { steps: ["Prepare tamarind water","Add tomato and garlic","Boil mixture","Add spices","Simmer and serve"], ingredients: {tomato:100,tamarind:20,garlic:20,black_pepper:5,cumin:5} },
+    "idli":                { steps: ["Soak rice and dal","Grind to batter","Ferment overnight","Pour into molds","Steam until cooked"], ingredients: {idli_rice:200,urad_dal:100} },
+    "dosa":                { steps: ["Prepare batter","Heat pan","Spread batter","Add oil","Cook until crisp"], ingredients: {idli_rice:200,urad_dal:100,oil:20} },
+    "ghee_dosa":           { steps: ["Prepare dosa batter","Heat a pan","Spread batter thinly","Add ghee on top","Cook until crispy"], ingredients: {idli_rice:200,urad_dal:100,ghee:30} },
+    "masala_dosa":         { steps: ["Prepare dosa batter","Cook dosa on pan","Prepare potato filling","Place filling inside dosa","Fold and serve hot"], ingredients: {idli_rice:200,urad_dal:100,potato:150,onion:50,oil:30} },
+    "egg_dosa":            { steps: ["Prepare dosa batter","Spread batter on pan","Crack egg on top","Add oil","Cook until done"], ingredients: {idli_rice:200,egg:2,oil:20} },
+    "kootu":               { steps: ["Cook moong dal","Boil vegetables","Grind coconut","Mix everything","Cook and serve"], ingredients: {moong_dal:100,carrot:100,beans:100,coconut:50} },
+    "poriyal":             { steps: ["Chop beans","Heat oil","Saute beans","Add coconut","Cook and serve"], ingredients: {beans:150,coconut:50,oil:20} },
+    "avial":               { steps: ["Cut vegetables","Cook vegetables","Grind coconut","Add curd","Mix and serve"], ingredients: {carrot:100,beans:100,coconut:100,curd:50} },
+    "rajma":               { steps: ["Soak rajma overnight","Cook until soft","Saute onion","Add rajma","Simmer and serve"], ingredients: {rajma:150,onion:100,oil:30} },
+    "chole":               { steps: ["Soak chickpeas","Cook until soft","Saute onion","Add chickpeas","Cook and serve"], ingredients: {chickpeas:150,onion:100,oil:30} },
+    "paneer_butter_masala":{ steps: ["Heat butter","Cook tomato gravy","Add paneer","Simmer","Serve hot"], ingredients: {paneer:200,butter:50,tomato:100} },
+    "sandwich":            { steps: ["Apply butter on bread","Add cheese","Place another slice","Toast or grill","Serve hot"], ingredients: {bread:2,butter:20,cheese:30} },
+    "veg_sandwich":        { steps: ["Slice vegetables","Place on bread","Add seasoning","Close sandwich","Serve fresh"], ingredients: {bread:2,cucumber:50,tomato:50} },
+    "salad":               { steps: ["Chop vegetables","Mix in bowl","Add salt","Toss well","Serve fresh"], ingredients: {cucumber:100,carrot:100,lettuce:100} },
+    "fruit_salad":         { steps: ["Cut fruits","Mix in bowl","Add honey if needed","Chill briefly","Serve fresh"], ingredients: {apple:1,banana:1,orange:1} },
+    "banana_shake":        { steps: ["Peel bananas","Add milk","Blend smoothly","Pour into glass","Serve chilled"], ingredients: {milk:300,banana:2} },
+    "milkshake":           { steps: ["Cut mango pieces","Add milk and sugar","Blend well","Pour into glass","Serve chilled"], ingredients: {milk:300,mango:1,sugar:20} },
+    "coffee":              { steps: ["Boil milk","Add coffee powder","Add sugar","Mix well","Serve hot"], ingredients: {milk:100,sugar:10} },
+    "tea":                 { steps: ["Boil milk","Add tea powder","Add sugar","Simmer briefly","Serve hot"], ingredients: {milk:100,sugar:10} },
+    "chocolate_milk":      { steps: ["Heat milk","Add chocolate","Stir until melted","Pour into glass","Serve warm or cold"], ingredients: {milk:200,chocolate:50} },
+    "ice_cream":           { steps: ["Take ice cream from freezer","Scoop into bowl","Let soften slightly","Serve immediately","Enjoy"], ingredients: {ice_cream:200} },
+    "jam_bread":           { steps: ["Take bread slices","Apply jam evenly","Place slices together","Cut if needed","Serve"], ingredients: {bread:2,jam:20} },
+  };
+
+  window.showHowTo = function() {
+    const dish     = document.getElementById('howto-dish').value.trim();
+    const servings = parseInt(document.getElementById('howto-servings').value) || 1;
+    const el       = document.getElementById('howto-result');
+
+    if (!dish) { showToast('Enter a dish name', 'warning'); return; }
+
+    const data = DISHES_DATA[dish];
+    if (!data) {
+      el.innerHTML = `<div class="alert-banner alert-banner--critical">⚠ Dish "${dish}" not found. Check the name and try again.</div>`;
+      return;
+    }
+
+    // Scale ingredients by servings (base is 2 servings in dishes.json)
+    const BASE_SERVINGS = 2;
+    const scaledIngredients = Object.entries(data.ingredients).map(([item, qty]) => ({
+      item,
+      qty: Math.round((qty / BASE_SERVINGS) * servings * 10) / 10
+    }));
+
+    el.innerHTML = `
+      <div style="margin-top:8px">
+
+        <!-- Dish header -->
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;
+          padding:16px 20px;background:var(--bg-elevated);border-radius:var(--radius-md)">
+          <span style="font-size:28px">🍽️</span>
+          <div>
+            <div style="font-family:var(--font-display);font-size:16px;font-weight:600">
+              ${dish.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase())}
+            </div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px">
+              For <strong style="color:var(--amber)">${servings}</strong> serving${servings>1?'s':''}
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingredients needed -->
+        <div style="margin-bottom:20px">
+          <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;
+            text-transform:uppercase;color:var(--text-muted);margin-bottom:10px">
+            🛒 Ingredients needed
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            ${scaledIngredients.map(i => `
+              <span style="padding:5px 12px;border-radius:99px;
+                background:var(--bg-elevated);border:1px solid var(--border);
+                font-size:12px;font-family:var(--font-mono);color:var(--text-secondary)">
+                ${i.item.replace(/_/g,' ')} — <strong style="color:var(--amber)">${i.qty}</strong>
+              </span>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- Steps -->
+        <div>
+          <div style="font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;
+            text-transform:uppercase;color:var(--text-muted);margin-bottom:12px">
+            👨‍🍳 Steps
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            ${data.steps.map((step, i) => `
+              <div style="display:flex;gap:14px;align-items:flex-start;
+                padding:14px 16px;background:var(--bg-elevated);
+                border-radius:var(--radius-sm);border-left:3px solid var(--amber)">
+                <span style="font-family:var(--font-display);font-size:18px;
+                  font-weight:700;color:var(--amber);min-width:24px;line-height:1.4">${i+1}</span>
+                <span style="font-size:13px;color:var(--text-primary);line-height:1.6">${step}</span>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+      </div>
+    `;
   };
 
   // Close dropdowns when clicking outside
