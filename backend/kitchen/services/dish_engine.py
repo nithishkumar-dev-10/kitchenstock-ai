@@ -4,7 +4,6 @@ from kitchen.utils.exceptions import ItemNotFoundError, InsufficientStockError
 
 
 def cook_dish(dish_name: str, servings: int) -> dict:
-    # Raises ItemNotFoundError or InvalidInputError if something is wrong
     check_result = check_ingredients(dish_name, servings)
 
     if not check_result.get("can_cook"):
@@ -15,13 +14,18 @@ def cook_dish(dish_name: str, servings: int) -> dict:
             f"Not enough ingredients to cook '{dish_name}'. Missing: {', '.join(missing)}"
         )
 
-    dishes = load_dishes()
+    dishes    = load_dishes()
     inventory = load_inventory()
 
-    ingredients = dishes[dish_name]
+    ingredients  = dishes[dish_name]
     updated_items = []
 
     for item, qty in ingredients.items():
+        if item == "steps":                        # skip steps key
+            continue
+        if not isinstance(qty, (int, float)):      # skip any non-numeric value
+            continue
+
         required = qty * servings
 
         if item not in inventory:
@@ -29,20 +33,19 @@ def cook_dish(dish_name: str, servings: int) -> dict:
 
         inventory[item]["quantity"] -= required
 
-        # Clamp to 0 — prevent negative stock
         if inventory[item]["quantity"] < 0:
             inventory[item]["quantity"] = 0
 
         updated_items.append({
-            "item": item,
+            "item":     item,
             "quantity": inventory[item]["quantity"],
-            "unit": inventory[item].get("unit", "")  # Safe: default empty string
+            "unit":     inventory[item].get("unit", "")
         })
 
     save_inventory(inventory)
 
     return {
-        "dish_name": dish_name,
-        "servings": servings,
+        "dish_name":         dish_name,
+        "servings":          servings,
         "updated_inventory": updated_items
     }
