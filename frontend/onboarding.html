@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Setup — KitchenStock AI</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-base);
+      font-family: var(--font-body);
+    }
+
+    .onboard-wrap {
+      width: 100%;
+      max-width: 480px;
+      padding: 2rem 1rem;
+    }
+
+    .onboard-header {
+      text-align: center;
+      margin-bottom: 1.8rem;
+    }
+    .onboard-header__logo {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    .onboard-header__logo span { color: var(--amber); }
+    .onboard-header__step {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 0.4rem;
+    }
+
+    .progress-bar {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      margin-bottom: 1.8rem;
+    }
+    .prog-dot {
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      transition: background 0.25s, width 0.25s;
+      flex: 1;
+      max-width: 60px;
+    }
+    .prog-dot.active { background: var(--amber); }
+    .prog-dot.done { background: var(--green); }
+
+    .screen {
+      display: none;
+      animation: slideIn 0.3s ease;
+    }
+    .screen.active { display: block; }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+    }
+
+    .card__title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.3rem;
+    }
+    .card__sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    .field { margin-bottom: 1rem; }
+    .field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .field input,
+    .field select {
+      width: 100%;
+      height: 42px;
+      padding: 0 14px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: var(--font-body);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input:focus,
+    .field select:focus { border-color: var(--amber); }
+
+    .btn-primary {
+      width: 100%;
+      height: 44px;
+      background: var(--amber);
+      color: #000;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+      margin-top: 1rem;
+      font-family: var(--font-body);
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:active { transform: scale(0.98); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Ingredient grid */
+    .ing-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      max-height: 260px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      padding-right: 2px;
+    }
+    .ing-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 12px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      font-size: 13px;
+      color: var(--text-primary);
+      user-select: none;
+    }
+    .ing-chip:hover { border-color: var(--amber); }
+    .ing-chip.selected {
+      border-color: var(--amber);
+      background: rgba(255, 190, 30, 0.08);
+    }
+    .ing-chip__emoji { font-size: 16px; }
+
+    /* Quantity rows */
+    .qty-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .qty-row:last-child { border-bottom: none; }
+    .qty-name {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+    .qty-input {
+      width: 80px;
+      height: 32px;
+      padding: 0 8px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 13px;
+      text-align: center;
+      outline: none;
+    }
+    .qty-input:focus { border-color: var(--amber); }
+    .qty-unit {
+      font-size: 11px;
+      color: var(--text-muted);
+      width: 28px;
+    }
+
+    /* Success screen */
+    .success-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(34, 197, 94, 0.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 1.2rem;
+    }
+    .feature-list {
+      list-style: none;
+      margin: 1rem 0 1.5rem;
+    }
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .feature-list li:last-child { border-bottom: none; }
+    .feat-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--green);
+      flex-shrink: 0;
+    }
+
+    .selected-count {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 0.8rem;
+    }
+    .selected-count span { color: var(--amber); font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<div class="onboard-wrap">
+
+  <div class="onboard-header">
+    <div class="onboard-header__logo">KitchenStock<span>AI</span></div>
+    <div class="onboard-header__step" id="step-label">Step 1 of 3</div>
+  </div>
+
+  <div class="progress-bar">
+    <div class="prog-dot active" id="p1"></div>
+    <div class="prog-dot" id="p2"></div>
+    <div class="prog-dot" id="p3"></div>
+  </div>
+
+  <!-- STEP 1: Profile -->
+  <div class="screen active" id="screen-1">
+    <div class="card">
+      <div class="card__title">Tell us about your kitchen</div>
+      <div class="card__sub">Helps us predict your consumption better</div>
+
+      <div class="field">
+        <label>How many people in your household?</label>
+        <input type="number" id="family-size" placeholder="e.g. 3" min="1" max="30" value="2" />
+      </div>
+      <div class="field">
+        <label>Diet type</label>
+        <select id="diet">
+          <option value="vegetarian">Vegetarian</option>
+          <option value="non_vegetarian">Non-vegetarian</option>
+          <option value="vegan">Vegan</option>
+          <option value="mixed" selected>Mixed</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Cooking frequency</label>
+        <select id="cooking-freq">
+          <option value="once_daily">Once a day</option>
+          <option value="twice_daily" selected>Twice a day</option>
+          <option value="thrice_daily">3+ times a day</option>
+          <option value="few_weekly">A few times a week</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Region</label>
+        <select id="region">
+          <option value="tamil_nadu" selected>Tamil Nadu</option>
+          <option value="north_india">North India</option>
+          <option value="kerala">Kerala</option>
+          <option value="karnataka">Karnataka</option>
+          <option value="other">Other</option>
+        </select>
+      </div>
+
+      <button class="btn-primary" onclick="goStep(2)">Continue →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Ingredient selection -->
+  <div class="screen" id="screen-2">
+    <div class="card">
+      <div class="card__title">What's in your kitchen?</div>
+      <div class="card__sub">Select the ingredients you regularly stock. You can add more later.</div>
+
+      <div class="selected-count">Selected: <span id="sel-count">5</span> items</div>
+
+      <div class="ing-grid" id="ing-grid"></div>
+
+      <button class="btn-primary" onclick="goStep(3)">Set quantities →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Quantities -->
+  <div class="screen" id="screen-3">
+    <div class="card">
+      <div class="card__title">How much do you have right now?</div>
+      <div class="card__sub">Enter approximate quantities. KitchenStock AI tracks from here.</div>
+
+      <div id="qty-section" style="max-height:300px; overflow-y:auto; margin-bottom:0.5rem;"></div>
+
+      <button class="btn-primary" id="finish-btn" onclick="finishOnboarding()">Finish setup</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Success -->
+  <div class="screen" id="screen-4">
+    <div class="card" style="text-align:center;">
+      <div class="success-icon">✓</div>
+      <div class="card__title">You're all set!</div>
+      <div class="card__sub">KitchenStock AI is now tracking your pantry.</div>
+      <ul class="feature-list" style="text-align:left;">
+        <li><span class="feat-dot"></span> Inventory tracking — live</li>
+        <li><span class="feat-dot"></span> Low stock alerts — enabled</li>
+        <li><span class="feat-dot"></span> AI consumption model — learning</li>
+        <li><span class="feat-dot"></span> Grocery suggestions — ready</li>
+      </ul>
+      <button class="btn-primary" onclick="window.location.href='index.html'">Go to dashboard</button>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { authStore } from './js/auth.js';
+
+  // Guard: must be logged in
+  if (!authStore.isLoggedIn()) {
+    window.location.href = 'login.html';
+  }
+
+  const INGREDIENTS = [
+    { name: 'Rice',      emoji: '🍚', unit: 'kg',  default: 2 },
+    { name: 'Onion',     emoji: '🧅', unit: 'kg',  default: 1 },
+    { name: 'Tomato',    emoji: '🍅', unit: 'kg',  default: 0.5 },
+    { name: 'Oil',       emoji: '🫙', unit: 'L',   default: 1 },
+    { name: 'Milk',      emoji: '🥛', unit: 'L',   default: 2 },
+    { name: 'Eggs',      emoji: '🥚', unit: 'nos', default: 6 },
+    { name: 'Flour',     emoji: '🌾', unit: 'kg',  default: 1 },
+    { name: 'Sugar',     emoji: '🍬', unit: 'kg',  default: 0.5 },
+    { name: 'Salt',      emoji: '🧂', unit: 'g',   default: 500 },
+    { name: 'Garlic',    emoji: '🧄', unit: 'nos', default: 10 },
+    { name: 'Potato',    emoji: '🥔', unit: 'kg',  default: 1 },
+    { name: 'Dal',       emoji: '🫘', unit: 'kg',  default: 0.5 },
+    { name: 'Tamarind',  emoji: '🌿', unit: 'g',   default: 100 },
+    { name: 'Coconut',   emoji: '🥥', unit: 'nos', default: 2 },
+    { name: 'Chilli',    emoji: '🌶️', unit: 'g',   default: 50 },
+    { name: 'Coriander', emoji: '🌿', unit: 'g',   default: 50 },
+  ];
+
+  const selected = new Set([0, 1, 2, 3, 4]);
+
+  // Render ingredient grid
+  function renderGrid() {
+    const grid = document.getElementById('ing-grid');
+    grid.innerHTML = INGREDIENTS.map((ing, i) => `
+      <div class="ing-chip ${selected.has(i) ? 'selected' : ''}" onclick="toggleIng(${i})">
+        <span class="ing-chip__emoji">${ing.emoji}</span>
+        <span>${ing.name}</span>
+      </div>
+    `).join('');
+    document.getElementById('sel-count').textContent = selected.size;
+  }
+
+  window.toggleIng = function(idx) {
+    if (selected.has(idx)) selected.delete(idx);
+    else selected.add(idx);
+    renderGrid();
+  };
+
+  function renderQty() {
+    const section = document.getElementById('qty-section');
+    const items = [...selected].map(i => INGREDIENTS[i]);
+    section.innerHTML = items.map(ing => `
+      <div class="qty-row">
+        <span class="qty-name">${ing.emoji} ${ing.name}</span>
+        <input class="qty-input" type="number" step="0.1" min="0"
+               data-item="${ing.name}" data-unit="${ing.unit}"
+               value="${ing.default}" />
+        <span class="qty-unit">${ing.unit}</span>
+      </div>
+    `).join('');
+  }
+
+  const stepLabels = ['Step 1 of 3', 'Step 2 of 3', 'Step 3 of 3', 'Done!'];
+
+  window.goStep = function(step) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(`screen-${step}`).classList.add('active');
+
+    // Progress dots
+    ['p1','p2','p3'].forEach((id, i) => {
+      const dot = document.getElementById(id);
+      dot.className = 'prog-dot';
+      if (i + 1 < step) dot.classList.add('done');
+      else if (i + 1 === step) dot.classList.add('active');
+    });
+
+    document.getElementById('step-label').textContent = stepLabels[step - 1];
+
+    if (step === 3) renderQty();
+  };
+
+  window.finishOnboarding = async function() {
+    const btn = document.getElementById('finish-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    // Collect profile
+    const profile = {
+      family_size: parseInt(document.getElementById('family-size').value) || 2,
+      diet: document.getElementById('diet').value,
+      cooking_freq: document.getElementById('cooking-freq').value,
+      region: document.getElementById('region').value,
+    };
+
+    // Collect ingredient quantities
+    const inputs = document.querySelectorAll('.qty-input');
+    const ingredients = [...inputs].map(inp => ({
+      item: inp.dataset.item,
+      quantity: parseFloat(inp.value) || 0,
+      unit: inp.dataset.unit,
+      threshold: 200.0
+    }));
+
+    try {
+      const res = await fetch('http://localhost:8000/auth/onboarding', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authStore.getToken()}`
+        },
+        body: JSON.stringify({ profile, ingredients })
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.detail || 'Onboarding failed');
+      }
+
+      goStep(4);
+
+    } catch (err) {
+      alert('Error: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = 'Finish setup';
+    }
+  };
+
+  renderGrid();
+</script>
+</body>
+</html>

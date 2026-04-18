@@ -68,6 +68,36 @@
     }
     .quick-btn__label { font-weight: 500; font-size: 13px; }
     .quick-btn__sub { font-size: 11px; color: var(--text-muted); }
+
+    /* User badge in topbar */
+    .user-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+    .user-avatar {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: var(--amber);
+      color: #000;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logout-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 4px 10px;
+      font-size: 12px;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: var(--font-body);
+    }
+    .logout-btn:hover { color: var(--red); border-color: var(--red); }
   </style>
 </head>
 <body>
@@ -77,7 +107,7 @@
     <div class="sidebar__logo">
       <div class="sidebar__logo-mark">
         <div class="logo-icon">🍳</div>
-        <div class="logo-text">KitchenStock<span>AI v1.0</span></div>
+        <div class="logo-text">KitchenStock<span>AI v2.0</span></div>
       </div>
     </div>
     <nav class="sidebar__nav">
@@ -115,7 +145,12 @@
     <div class="topbar__title">Dashboard</div>
     <div class="topbar__right">
       <span class="topbar__date" id="today-date"></span>
+      <div class="user-badge">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <span id="user-name">…</span>
+      </div>
       <button class="btn btn--secondary btn--sm" onclick="loadDashboard()">↻ Refresh</button>
+      <button class="logout-btn" onclick="handleLogout()">Sign out</button>
     </div>
   </header>
 
@@ -155,13 +190,10 @@
 
     <!-- Dashboard grid -->
     <div class="dashboard-grid">
-      <!-- Predictions card -->
       <div class="card card--glow">
         <div class="card__title"><span class="card__title-icon">🔮</span> Runout Predictions</div>
         <div id="pred-list"><div class="skeleton" style="height:200px; border-radius:8px"></div></div>
       </div>
-
-      <!-- Alerts card -->
       <div class="card">
         <div class="card__title"><span class="card__title-icon">🔔</span> Alerts</div>
         <div class="alert-row" id="alert-list"></div>
@@ -173,10 +205,24 @@
 <script type="module">
   import API from './js/api.js';
   import { checkConnection, animateCount, statusBadge, emptyState } from './js/utils.js';
+  import { authStore, requireAuth } from './js/auth.js';
+
+  // Auth guard — redirect to login if not signed in
+  requireAuth();
+
+  // Show user info in topbar
+  const name = authStore.getName() || 'User';
+  document.getElementById('user-name').textContent = name;
+  document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
 
   // Date
   document.getElementById('today-date').textContent =
     new Date().toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+
+  // Logout
+  window.handleLogout = function() {
+    authStore.logout();
+  };
 
   window.loadDashboard = async function() {
     checkConnection(API);
@@ -195,27 +241,28 @@
       document.getElementById('stat-grid').innerHTML = `
         <div class="stat-card stat-card--info">
           <div class="stat-card__label">Total Items</div>
-          <div class="stat-card__value" id="cnt-total">${total}</div>
+          <div class="stat-card__value">${total}</div>
           <div class="stat-card__sub">ingredients tracked</div>
         </div>
         <div class="stat-card stat-card--critical">
           <div class="stat-card__label">Out of Stock</div>
-          <div class="stat-card__value" id="cnt-out">${outOfStock}</div>
+          <div class="stat-card__value">${outOfStock}</div>
           <div class="stat-card__sub">need immediate restock</div>
         </div>
         <div class="stat-card stat-card--warning">
           <div class="stat-card__label">Low Stock</div>
-          <div class="stat-card__value" id="cnt-low">${low}</div>
+          <div class="stat-card__value">${low}</div>
           <div class="stat-card__sub">below threshold</div>
         </div>
         <div class="stat-card stat-card--safe">
           <div class="stat-card__label">Well Stocked</div>
-          <div class="stat-card__value" id="cnt-good">${good}</div>
+          <div class="stat-card__value">${good}</div>
           <div class="stat-card__sub">no action needed</div>
         </div>
       `;
     } catch(e) {
-      document.getElementById('stat-grid').innerHTML = `<div class="alert-banner alert-banner--critical" style="grid-column:1/-1">⚠ ${e.message}</div>`;
+      document.getElementById('stat-grid').innerHTML =
+        `<div class="alert-banner alert-banner--critical" style="grid-column:1/-1">⚠ ${e.message}</div>`;
     }
   }
 
@@ -225,16 +272,15 @@
       renderPredictions(data.predictions?.predictions || []);
       renderAlerts(data.alerts || {});
     } catch(e) {
-      document.getElementById('pred-list').innerHTML = `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
+      document.getElementById('pred-list').innerHTML =
+        `<div class="alert-banner alert-banner--critical">⚠ ${e.message}</div>`;
     }
   }
 
   function renderPredictions(preds) {
     const el = document.getElementById('pred-list');
     if (!preds.length) { emptyState(el, 'No prediction data yet. Log some dishes first.'); return; }
-
-    const top = preds.slice(0, 8);
-    el.innerHTML = top.map(p => `
+    el.innerHTML = preds.slice(0, 8).map(p => `
       <div class="pred-item">
         <div class="pred-item__name">${p.item}</div>
         ${statusBadge(p.status)}
@@ -249,7 +295,6 @@
   function renderAlerts(alerts) {
     const el = document.getElementById('alert-list');
     const rows = [];
-
     (alerts.out_of_stock || []).forEach(item => {
       rows.push(`<div class="alert-item alert-item--critical">
         <span>🔴</span><span class="alert-item__name">${item}</span>
@@ -268,12 +313,9 @@
         <span class="alert-item__meta">Expires in ${item.days_left}d</span>
       </div>`);
     });
-
-    if (!rows.length) {
-      el.innerHTML = `<div class="alert-banner alert-banner--success">✓ All items in good condition</div>`;
-    } else {
-      el.innerHTML = rows.join('');
-    }
+    el.innerHTML = rows.length
+      ? rows.join('')
+      : `<div class="alert-banner alert-banner--success">✓ All items in good condition</div>`;
   }
 
   loadDashboard();

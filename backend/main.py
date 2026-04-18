@@ -1,12 +1,12 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-
-from kitchen.core.config import settings
-from kitchen.utils.exceptions import KitchenBaseError, NoDataAvailableError
-from kitchen.utils.responses import error_response
-
 from fastapi.middleware.cors import CORSMiddleware
 
+from kitchen.core.config import settings
+from kitchen.core.database import engine
+from kitchen.models.models import Base
+from kitchen.utils.exceptions import KitchenBaseError, NoDataAvailableError
+from kitchen.utils.responses import error_response
 
 # Routers
 from api.routes import (
@@ -18,18 +18,24 @@ from api.routes import (
     consumption,
     prediction,
     storage,
+    auth,        # NEW
 )
 
 # Services
 from kitchen.services.prediction_engine import predict_runout
 from kitchen.services.alert_system import check_alerts
 
-# OPTIONAL (future ML integration)
+# OPTIONAL ML
 try:
     from kitchen.services.ml_engine import predict_with_model
     ML_AVAILABLE = True
 except ImportError:
     ML_AVAILABLE = False
+
+
+# ------------------ CREATE TABLES ------------------
+# Creates all PostgreSQL tables on startup if they don't exist
+Base.metadata.create_all(bind=engine)
 
 
 # ------------------ APP INIT ------------------
@@ -45,6 +51,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 # ------------------ EXCEPTION HANDLERS ------------------
 
 @app.exception_handler(KitchenBaseError)
@@ -63,17 +71,10 @@ async def generic_exception_handler(request: Request, exc: Exception):
     )
 
 
-# ------------------ CORE DASHBOARD ------------------
+# ------------------ DASHBOARD ------------------
 
 @app.get("/dashboard", tags=["Dashboard"])
 def dashboard():
-    """
-    Dashboard combines:
-    - predictions (ML or fallback)
-    - alerts
-    """
-
-    #  Prediction logic (ML + fallback)
     try:
         if ML_AVAILABLE:
             predictions = predict_with_model()
@@ -82,10 +83,8 @@ def dashboard():
     except NoDataAvailableError:
         predictions = {"predictions": []}
     except Exception:
-        # fallback safety
         predictions = predict_runout()
 
-    # 🔥 Alerts
     try:
         alerts_data = check_alerts()
     except Exception:
@@ -99,17 +98,18 @@ def dashboard():
 
 # ------------------ ROUTERS ------------------
 
+app.include_router(auth.router)                        # NEW — no prefix conflict
 app.include_router(storage.router, tags=["Storage"])
 app.include_router(prediction.router, tags=["Prediction"])
 app.include_router(consumption.router, tags=["Consumption"])
 app.include_router(alerts.router, tags=["Alerts"])
 app.include_router(dishes.router, tags=["Dishes"])
-app.include_router(inventory.router,tags=["Inventory"])
-app.include_router(recipes.router,tags=["Recipes"])
+app.include_router(inventory.router, tags=["Inventory"])
+app.include_router(recipes.router, tags=["Recipes"])
 app.include_router(shopping.router, tags=["Shopping"])
 
 
-# ------------------ HEALTH CHECK ------------------
+# ------------------ HEALTH ------------------
 
 @app.get("/health", tags=["Health"])
 def health():
@@ -117,5 +117,5 @@ def health():
         "status": "ok",
         "app": settings.app_name,
         "version": settings.version,
-        "ml_enabled": ML_AVAILABLE   #  NEW
+        "ml_enabled": ML_AVAILABLE
     }
