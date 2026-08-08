@@ -1,39 +1,32 @@
-// In-memory auth store — token never touches localStorage
-// Lives only for the current browser session (tab)
-
-const _state = {
-  token: null,
-  name: null,
-  userId: null,
-};
+// Auth store — token lives in sessionStorage (survives redirects, clears on tab close)
 
 export const authStore = {
   save(token, name, userId) {
-    _state.token = token;
-    _state.name = name;
-    _state.userId = userId;
+    sessionStorage.setItem('token', token);
+    sessionStorage.setItem('name', name);
+    sessionStorage.setItem('userId', userId);
   },
 
   getToken() {
-    return _state.token;
+    return sessionStorage.getItem('token');
   },
 
   getName() {
-    return _state.name;
+    return sessionStorage.getItem('name');
   },
 
   getUserId() {
-    return _state.userId;
+    return sessionStorage.getItem('userId');
   },
 
   isLoggedIn() {
-    return !!_state.token;
+    return !!sessionStorage.getItem('token');
   },
 
   clear() {
-    _state.token = null;
-    _state.name = null;
-    _state.userId = null;
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('name');
+    sessionStorage.removeItem('userId');
   },
 
   logout() {
