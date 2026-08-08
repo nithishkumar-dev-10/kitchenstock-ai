@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
-
+import os
+from fastapi.staticfiles import StaticFiles
 from kitchen.core.config import settings
 from kitchen.core.database import engine
 from kitchen.models.models import Base
@@ -119,3 +120,8 @@ def health():
         "version": settings.version,
         "ml_enabled": ML_AVAILABLE
     }
+
+# ------------------ FRONTEND (STATIC FILES) ------------------
+frontend_path = os.path.join(os.path.dirname(__file__), "..", "frontend")
+
+app.mount("/", StaticFiles(directory=frontend_path, html=True), name="frontend")

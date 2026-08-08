@@ -3,7 +3,7 @@
 //  Change BASE_URL to your FastAPI server address
 // ============================================================
 
-const BASE_URL = "http://localhost:8000"; // ← CHANGE THIS if deployed
+const BASE_URL = ""; // ← CHANGE THIS if deployed
 
 // ── Generic fetch wrapper ──────────────────────────────────
 async function apiFetch(endpoint, options = {}) {
